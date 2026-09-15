@@ -33,11 +33,6 @@ export function website(): Json {
     description: SITE.description,
     inLanguage: 'en-US',
     publisher: { '@id': ORG_ID },
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: { '@type': 'EntryPoint', urlTemplate: `${abs('/search/')}?q={search_term_string}` },
-      'query-input': 'required name=search_term_string',
-    },
   };
 }
 

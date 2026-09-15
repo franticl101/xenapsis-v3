@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TESTS } from '../data/tests';
+import { PRIMARY_NAV } from '../lib/nav';
+---
+<BaseLayout
+  title="Page Not Found — Try One of These Instead"
+  description="That page does not exist. Here are the free personality tests, type profiles and guides most people are looking for when they land here."
+  noindex={true}
+>
+  <section class="hero wrap">
+    <p class="eyebrow">Error 404</p>
+    <h1>That page does not exist</h1>
+    <p class="lede">
+      The link may be outdated, or the address may have a typo. Here is where most people are
+      heading.
+    </p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/tests/personality-type/">Take the personality type test</a>
+      <a class="btn btn-ghost" href="/">Go to the homepage</a>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head"><h2>Popular destinations</h2></div>
+    <div class="grid grid-2">
+      {TESTS.map((test) => (
+        <a class="card" href={test.path}>
+          <h3>{test.name}</h3>
+          <p>{test.cardBlurb}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap prose">
+      <h2>Browse the site</h2>
+      <ul>
+        {PRIMARY_NAV.map((item) => (
+          <li><a href={item.path}>{item.label}</a> — {item.blurb}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

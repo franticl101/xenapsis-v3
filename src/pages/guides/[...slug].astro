@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { article, faqPage } from '../../lib/schema';
+import { formatDate } from '../../lib/dates';
+import { wordCount, readingTime } from '../../lib/text';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((guide) => ({ params: { slug: guide.id }, props: { guide } }));
+}
+
+const { guide } = Astro.props;
+const { Content } = await render(guide);
+const words = wordCount(guide.body ?? '');
+const minutes = readingTime(guide.body ?? '');
+const path = `/guides/${guide.id}/`;
+const { title, description, published, updated, faqs } = guide.data;
+
+const schema = [
+  article({
+    headline: title,
+    description,
+    path,
+    published,
+    modified: updated,
+    section: 'Guides',
+    wordCount: words,
+  }),
+  ...(faqs.length > 0 ? [faqPage(faqs, path)] : []),
+];
+---
+<BaseLayout
+  title={title}
+  description={description}
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Guides', path: '/guides/' }, { name: title, path }]}
+  schema={schema}
+  ogType="article"
+  published={published}
+  modified={updated}
+  layout="narrow"
+>
+  <article class="wrap guide">
+    <header>
+      <h1>{title}</h1>
+      <p class="guide-meta">
+        <time datetime={published}>Published {formatDate(published)}</time>
+        {updated !== published && <> · <time datetime={updated}>updated {formatDate(updated)}</time></>}
+        <> · {minutes} min read</>
+      </p>
+    </header>
+
+    <Content />
+
+    {faqs.length > 0 && (
+      <section>
+        <h2>Common questions</h2>
+        {faqs.map((faq) => (
+          <details><summary>{faq.question}</summary><p>{faq.answer}</p></details>
+        ))}
+      </section>
+    )}
+
+    <div class="callout">
+      <p>
+        <strong>Take the test.</strong> Free, 48 questions, about nine minutes, and your full
+        result appears on screen the moment you finish — no email, no account.
+        <a href="/tests/personality-type/">Start the personality type test →</a>
+      </p>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .guide header { margin-bottom: 2rem; }
+  .guide-meta { color: var(--ink-faint); font-size: .9rem; margin: 0; }
+  .guide :global(blockquote) { border-left: 3px solid var(--line); margin: 1.5rem 0; padding-left: 1.2rem; color: var(--ink-soft); }
+  .guide :global(li) { margin-bottom: .35rem; }
+</style>

@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+import { SITE_BUILD_DATE, formatDate } from '../lib/dates';
+
+const PATH = '/privacy/';
+---
+<BaseLayout
+  title="Privacy at Xenapsis: Nothing Leaves Your Browser"
+  description="Xenapsis collects no personal data. Test answers are scored locally and never transmitted, there are no accounts, no advertising trackers and no mailing list."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Privacy', path: PATH }]}
+  layout="narrow"
+>
+  <section class="hero wrap">
+    <p class="eyebrow">Last updated {formatDate(SITE_BUILD_DATE)}</p>
+    <h1>Privacy at Xenapsis</h1>
+    <p class="lede">
+      The short version: we do not collect personal data, because the site is not built in a way
+      that could.
+    </p>
+  </section>
+
+  <div class="wrap prose">
+    <h2>Your test answers</h2>
+    <p>
+      Every Xenapsis assessment is scored by a small script running in your own browser. Your
+      responses are held in the page's memory while you answer and are discarded when you close
+      or reload it.
+    </p>
+    <p>
+      They are never transmitted to a server. This is not a policy commitment that could be
+      quietly changed — {SITE.name} is published as static files with no backend, so there is no
+      endpoint that could receive them. Nothing is stored, and nothing is attached to an identity.
+    </p>
+
+    <h2>What we do not collect</h2>
+    <ul>
+      <li><strong>No email addresses.</strong> There is no email field anywhere on the site.</li>
+      <li><strong>No accounts.</strong> There is no registration, no login, and no user record.</li>
+      <li><strong>No advertising trackers.</strong> No ad networks, pixels, or third-party advertising cookies.</li>
+      <li><strong>No test results.</strong> We have no record of your type, your scores, or that you took a test at all.</li>
+      <li><strong>No mailing list.</strong> We have no means of contacting you.</li>
+    </ul>
+
+    <h2>Server logs</h2>
+    <p>
+      Like any website, requests for pages reach a web host, which may keep short-lived technical
+      logs — IP address, timestamp, the page requested, and browser user-agent — for security and
+      operational purposes. These are standard server access logs. They contain no test answers,
+      because test answers are never sent.
+    </p>
+
+    <h2>Cookies and local storage</h2>
+    <p>
+      Xenapsis sets no cookies. The assessments do not use local storage or session storage,
+      which is why answers do not persist between visits.
+    </p>
+
+    <h2>Third parties</h2>
+    <p>
+      The site loads no third-party scripts, fonts, or analytics. Fonts are the ones already on
+      your device, which is also why pages render quickly.
+    </p>
+
+    <h2>Children</h2>
+    <p>
+      These assessments are written for people aged roughly 16 and over. Since we collect no
+      personal data from anyone, there is no children's data to handle differently.
+    </p>
+
+    <h2>Changes to this page</h2>
+    <p>
+      If the site ever changes in a way that affects this, this page will be updated and the date
+      at the top will change. Given the architecture — static files, no backend — a change of that
+      kind would require rebuilding the site as something fundamentally different.
+    </p>
+  </div>
+</BaseLayout>

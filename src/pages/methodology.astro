@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TESTS } from '../data/tests';
+import { article, faqPage } from '../lib/schema';
+import { SITE_BUILD_DATE } from '../lib/dates';
+
+const PATH = '/methodology/';
+const totalItems = TESTS.reduce((n, t) => n + t.questions.length, 0);
+const faqs = [
+  { question: 'How are Xenapsis tests scored?', answer: 'Each item contributes a signed value from -2 to +2, multiplied by its keying direction. Those values are summed per scale and expressed as a position between the two poles, where 50% is an exact tie. Preference strength is the distance from that midpoint, doubled, so it runs from 0 to 100.' },
+  { question: 'What is reverse keying and why does it matter?', answer: 'Half the items on every scale are worded so that agreeing moves the score in the opposite direction. Without this, a respondent who agrees with everything — a common and well-documented response style — would be pushed to an extreme that reflects their response habit rather than their personality.' },
+  { question: 'Are these tests validated?', answer: 'They are not formally normed or peer-reviewed, and we do not claim otherwise. They are built on published frameworks using standard psychometric construction practice: balanced keying, adequate items per scale, and continuous rather than binary reporting. For decisions with real consequences, use a properly normed instrument administered by a qualified practitioner.' },
+];
+---
+<BaseLayout
+  title="How Xenapsis Builds and Scores Its Tests"
+  description="The item design, keying balance, and scoring maths behind every Xenapsis assessment — including what these tests are not validated to do."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Methodology', path: PATH }]}
+  schema={[
+    article({ headline: 'How Xenapsis builds and scores its tests', description: 'Item design, keying and scoring methodology.', path: PATH, published: SITE_BUILD_DATE, modified: SITE_BUILD_DATE, section: 'About' }),
+    faqPage(faqs, PATH),
+  ]}
+  layout="narrow"
+>
+  <section class="hero wrap">
+    <p class="eyebrow">Methodology</p>
+    <h1>How these tests are built and scored</h1>
+    <p class="lede">
+      {totalItems} items across {TESTS.length} assessments, with the construction decisions
+      stated openly — including the ones that limit what the results can be used for.
+    </p>
+  </section>
+
+  <div class="wrap prose">
+    <h2>Item design</h2>
+    <p>
+      Every scale is measured by at least six statements, and the personality type test uses
+      twelve per dimension. More items per scale means a more stable score: a single ambiguous
+      question cannot swing the result.
+    </p>
+    <p>
+      Items are written as concrete behavioural statements rather than abstract self-descriptions.
+      "I often think of what I wanted to say only after the conversation has ended" is easier to
+      answer accurately than "I am an introvert", because it asks about something that either
+      happens to you or does not.
+    </p>
+
+    <h2>Balanced keying</h2>
+    <p>
+      Half the items on every scale are reverse-keyed — worded so that agreement moves the score
+      toward the opposite pole. This is not stylistic. It controls for
+      <strong>acquiescence bias</strong>, the well-documented tendency for some respondents to
+      agree with statements regardless of content.
+    </p>
+    <p>
+      The practical effect: if you answered "strongly agree" to all 48 questions on the
+      personality type test, you would score exactly 50% on every dimension — an honest "no
+      preference detected" rather than a flattering extreme. Many casual online quizzes score
+      that same response pattern as a maximally strong personality.
+    </p>
+    <div class="callout">
+      <p>
+        This property is covered by an automated test that runs on every change to the site, so
+        it cannot quietly regress if items are edited later.
+      </p>
+    </div>
+
+    <h2>The scoring maths</h2>
+    <ol>
+      <li>Each response maps to a value from <code>-2</code> (strongly disagree) to <code>+2</code> (strongly agree).</li>
+      <li>That value is multiplied by the item's keying direction, <code>+1</code> or <code>-1</code>.</li>
+      <li>Values are summed across the items belonging to one scale.</li>
+      <li>The sum is converted to a position between the two poles, where <strong>50% is an exact tie</strong>.</li>
+      <li><strong>Preference strength</strong> is the distance from 50, doubled — so 0 means a perfect tie and 100 means every item was answered at the extreme in the same direction.</li>
+    </ol>
+    <p>
+      Unanswered items are skipped rather than counted as neutral, so a partially completed scale
+      is scored on what was actually answered. In practice the tests require every item before
+      showing a result.
+    </p>
+
+    <h2>Reporting strength, not just a label</h2>
+    <p>
+      Every result leads with preference strength. A four-letter type where one dimension scored
+      3% is a fundamentally different result from one where every dimension scored 80%, and
+      reporting only the letters hides that completely.
+      <a href="/guides/what-do-personality-test-percentages-mean/">Why this is the most misread part of any result.</a>
+    </p>
+
+    <h2>Privacy by construction</h2>
+    <p>
+      Scoring runs in your browser. The site is static files with no backend, so your answers are
+      never transmitted — not because of a policy, but because there is no endpoint to transmit
+      them to. Nothing is stored, and no email address is requested at any point.
+    </p>
+
+    <h2>What these tests are not</h2>
+    <p>
+      They are not normed against a reference population, not peer-reviewed, and not validated
+      for selection, diagnosis, or clinical use. They are educational instruments for
+      self-reflection.
+    </p>
+    <ul>
+      <li><strong>Do not use them for hiring.</strong> Type-based instruments do not reliably predict job performance. Structured interviews and work samples do it far better.</li>
+      <li><strong>Do not use them diagnostically.</strong> They measure preference, not pathology.</li>
+      <li><strong>Treat the result as a hypothesis</strong> about how you tend to operate, and check it against how you actually behave.</li>
+    </ul>
+    <p>
+      The longer version of this argument, including where the research disagrees with the
+      framework, is in <a href="/guides/are-personality-tests-accurate/">are personality tests actually accurate</a>.
+    </p>
+
+    <h2>Common questions</h2>
+    {faqs.map((faq) => (
+      <details><summary>{faq.question}</summary><p>{faq.answer}</p></details>
+    ))}
+  </div>
+</BaseLayout>

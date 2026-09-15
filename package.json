@@ -11,8 +11,9 @@
     "audit": "node scripts/seo-audit.mjs",
     "check": "astro check",
     "test": "node --test \"tests/**/*.test.ts\"",
-    "verify": "npm run test && npm run build && npm run test:e2e",
-    "test:e2e": "node tests/e2e/assessment.mjs"
+    "verify": "npm run test && npm run build && npm run test:e2e && npm run vitals",
+    "test:e2e": "node tests/e2e/assessment.mjs",
+    "vitals": "node scripts/measure-vitals.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

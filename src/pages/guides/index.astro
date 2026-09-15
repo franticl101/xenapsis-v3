@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { itemList } from '../../lib/schema';
+import { formatDate } from '../../lib/dates';
+
+const PATH = '/guides/';
+const guides = (await getCollection('guides')).sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout
+  title="Guides to Reading a Personality Result"
+  description="Plain guides to personality testing: what the research supports, what the percentages mean, and how to get a real result without handing over your email address."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Guides', path: PATH }]}
+  schema={[itemList('Xenapsis guides', guides.map((g) => ({ name: g.data.title, path: `/guides/${g.id}/` })))]}
+>
+  <section class="hero wrap">
+    <p class="eyebrow">{guides.length} guides</p>
+    <h1>Guides to personality testing</h1>
+    <p class="lede">
+      Written to be useful rather than promotional, including the parts where the research
+      does not support what this industry usually claims.
+    </p>
+  </section>
+
+  <section class="section wrap">
+    <div class="grid grid-2">
+      {guides.map((guide) => (
+        <article class="card">
+          <h2 style="font-size:1.2rem;margin-top:0">
+            <a href={`/guides/${guide.id}/`}>{guide.data.title}</a>
+          </h2>
+          <p>{guide.data.summary}</p>
+          <p class="meta">
+            <time datetime={guide.data.updated}>Updated {formatDate(guide.data.updated)}</time>
+          </p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap prose">
+      <h2>What these guides are for</h2>
+      <p>
+        Most writing about personality testing falls into one of two camps. The first treats
+        every result as revealed truth and builds career advice on top of it. The second
+        dismisses the whole field as astrology with a business model. Both are wrong, and the
+        second is wrong in a way that costs people something genuinely useful.
+      </p>
+      <p>
+        These guides aim for the defensible middle: what the evidence supports, where it runs
+        out, and how to extract value from a result without overreading it.
+      </p>
+
+      <h2>Three things worth knowing before you read a result</h2>
+      <h3>The percentage matters more than the letter</h3>
+      <p>
+        A four-letter type where one dimension scored 3% is a completely different result from
+        one where every dimension scored 80%, and reporting only the letters hides that. This is
+        the most common source of "the test got me wrong" — if you sit near the midpoint on a
+        dimension, your letter is close to a coin toss and will legitimately differ between
+        tests. <a href="/guides/what-do-personality-test-percentages-mean/">How to read the numbers →</a>
+      </p>
+
+      <h3>Type predicts satisfaction better than performance</h3>
+      <p>
+        These instruments are poor at predicting how well someone will do a job, and noticeably
+        better at describing which working conditions would wear them down. That distinction
+        matters because most people who leave a role leave over conditions — interruption,
+        isolation, pace, politics — rather than because they could not do the work.
+        <a href="/guides/are-personality-tests-accurate/">What the research actually supports →</a>
+      </p>
+
+      <h3>The gate is a business decision, not a technical one</h3>
+      <p>
+        Nothing about scoring a personality test requires an email address. When a test asks for
+        one after the questions rather than before, that placement is deliberate: it is the
+        highest-conversion moment the site will ever have with you.
+        <a href="/guides/personality-test-without-email/">Why the email gate exists →</a>
+      </p>
+
+      <h2>Start with a result</h2>
+      <p>
+        These guides make considerably more sense alongside your own numbers. The
+        <a href="/tests/personality-type/">personality type test</a> takes about nine minutes and
+        reports preference strength on each dimension rather than just handing you four letters.
+        If your real question is what work to do, the <a href="/tests/career-fit/">career fit test</a>
+        measures vocational interest, which predicts job satisfaction considerably better than
+        type does.
+      </p>
+      <p>
+        How the tests themselves are constructed — item wording, keying balance, and the scoring
+        maths — is set out on the <a href="/methodology/">methodology page</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

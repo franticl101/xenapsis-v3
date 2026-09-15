@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { itemList } from '../../lib/schema';
+
+const PATH = '/compare/';
+const PAGES = [
+  { name: 'Personality tests without signup', path: '/compare/personality-tests-without-signup/', blurb: 'What the email gate costs you, and what a genuinely ungated test looks like.' },
+  { name: 'Free vs paid personality tests', path: '/compare/free-vs-paid-personality-tests/', blurb: 'What you actually get for the money, and the cases where paying is the right call.' },
+];
+---
+<BaseLayout
+  title="Comparing Personality Tests: What to Look For"
+  description="How free personality tests differ in what they gate, what they charge for and what they measure — plus the questions worth asking before you start answering."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Compare', path: PATH }]}
+  schema={[itemList('Personality test comparisons', PAGES.map((p) => ({ name: p.name, path: p.path })))]}
+>
+  <section class="hero wrap">
+    <p class="eyebrow">Comparisons</p>
+    <h1>Comparing personality tests</h1>
+    <p class="lede">
+      Free personality tests differ less in their questions than in their business model.
+      Understanding which model you are dealing with tells you most of what you need to know
+      before you start answering.
+    </p>
+  </section>
+
+  <section class="section wrap">
+    <div class="grid grid-2">
+      {PAGES.map((page) => (
+        <article class="card">
+          <h2 style="font-size:1.2rem;margin-top:0"><a href={page.path}>{page.name}</a></h2>
+          <p>{page.blurb}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap prose">
+      <h2>The four business models behind "free" tests</h2>
+      <p>Nearly every free personality test on the web runs on one of these.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>What the site gets in exchange for the test</caption>
+          <thead><tr><th scope="col">Model</th><th scope="col">What you give up</th><th scope="col">How to spot it</th></tr></thead>
+          <tbody>
+            <tr>
+              <th scope="row">Email gate</th>
+              <td>Your address, and the marketing that follows it.</td>
+              <td>A signup step appears after the questions, never before.</td>
+            </tr>
+            <tr>
+              <th scope="row">Freemium report</th>
+              <td>The useful half of your result, unless you pay.</td>
+              <td>A summary result with sections marked "premium" or blurred.</td>
+            </tr>
+            <tr>
+              <th scope="row">Advertising</th>
+              <td>Attention, page speed, and some tracking.</td>
+              <td>Display ads, or a result split across several pages.</td>
+            </tr>
+            <tr>
+              <th scope="row">Genuinely free</th>
+              <td>Nothing, which is rarer than the word "free" suggests.</td>
+              <td>No signup, no paid tier, no ads, results on screen immediately.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Xenapsis is the fourth. There is no email step, no paid tier, and no advertising —
+        the site is static files and the scoring runs in your browser, so there is very little
+        for it to cost.
+      </p>
+
+      <h2>Five questions worth asking before you start</h2>
+      <ol>
+        <li><strong>Does the result appear without an email?</strong> Check the FAQ before spending ten minutes answering questions.</li>
+        <li><strong>Is the full result free, or a teaser?</strong> A "free test" advertised next to a report price usually means the free part is a summary.</li>
+        <li><strong>Does it report strength, or just a label?</strong> A bare four-letter code hides whether your result was decisive or a coin toss. <a href="/guides/what-do-personality-test-percentages-mean/">Why that matters.</a></li>
+        <li><strong>Are the questions balanced?</strong> If every statement is worded in the same direction, agreeing with all of them produces an extreme result that means nothing. <a href="/methodology/">How we handle this.</a></li>
+        <li><strong>Is the site honest about limits?</strong> Any test claiming to predict job performance from type is overselling. <a href="/guides/are-personality-tests-accurate/">What the research supports.</a></li>
+      </ol>
+    </div>
+  </section>
+</BaseLayout>

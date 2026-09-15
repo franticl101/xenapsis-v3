@@ -95,6 +95,20 @@ code { font-family: var(--mono); font-size: .9em; background: var(--bg-sink); pa
 .site-nav a { display: inline-block; padding: .45rem .7rem; border-radius: 8px; color: var(--ink-soft); text-decoration: none; font-size: .95rem; font-weight: 600; }
 .site-nav a:hover, .site-nav a[aria-current="page"] { background: var(--brand-wash); color: var(--brand-ink); }
 
+/* Below this width the nav cannot sit beside the wordmark without wrapping over
+   it, so the bar stacks and the nav scrolls sideways. No JS, no hamburger, and
+   every destination stays reachable. The header also stops being sticky here:
+   a two-row header costs too much of a short viewport, and it keeps the test
+   progress bar's offset from depending on how the nav happens to wrap. */
+@media (max-width: 52rem) {
+  .site-header { position: static; }
+  .site-header .bar { flex-wrap: wrap; gap: .4rem 1rem; padding: .6rem 0; }
+  .site-nav { margin-left: 0; width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .site-nav::-webkit-scrollbar { display: none; }
+  .site-nav ul { flex-wrap: nowrap; padding-bottom: .15rem; }
+  .site-nav a { white-space: nowrap; }
+}
+
 .site-footer { border-top: 1px solid var(--line); margin-top: 5rem; background: var(--bg-soft); padding: 2.5rem 0 3rem; color: var(--ink-soft); font-size: .95rem; }
 .site-footer .cols { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
 .site-footer h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .09em; color: var(--ink-faint); margin: 0 0 .7rem; }
@@ -105,6 +119,12 @@ code { font-family: var(--mono); font-size: .9em; background: var(--bg-sink); pa
 .site-footer .legal { margin-top: 2.25rem; padding-top: 1.25rem; border-top: 1px solid var(--line); font-size: .875rem; color: var(--ink-faint); }
 
 .breadcrumbs { width: min(100% - 2rem, var(--wrap)); margin: 1rem auto 0; font-size: .875rem; color: var(--ink-faint); }
+/* Article-style pages set their content width once, on <body>; the hero, prose
+   and breadcrumbs all resolve to it so nothing steps out of alignment.
+   Scoped to the content region: site chrome keeps a constant width on every
+   page, so the header and footer do not shift between page types. */
+body[data-layout="narrow"] .breadcrumbs,
+body[data-layout="narrow"] main .wrap { width: min(100% - 2rem, var(--prose)); }
 .breadcrumbs ol { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; margin: 0; padding: 0; }
 .breadcrumbs li + li::before { content: "/"; margin-right: .4rem; color: var(--line); }
 .breadcrumbs a { color: var(--ink-faint); text-decoration: none; }

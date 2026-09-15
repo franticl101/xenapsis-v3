@@ -1,0 +1,139 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { TYPES, type TypeProfile } from '../../data/types';
+import { CAREER_NOTES, type CareerNotes } from '../../data/careers';
+import { article, faqPage } from '../../lib/schema';
+import { SITE_BUILD_DATE } from '../../lib/dates';
+
+export function getStaticPaths() {
+  return TYPES.map((type) => ({
+    params: { code: type.code.toLowerCase() },
+    props: { type, notes: CAREER_NOTES[type.code] },
+  }));
+}
+
+const { type, notes } = Astro.props as { type: TypeProfile; notes: CareerNotes };
+const path = `/careers/${type.code.toLowerCase()}/`;
+
+const faqs = [
+  {
+    question: `What are the best careers for an ${type.code}?`,
+    answer: `${type.careers.slice(0, 5).map((c) => c.title).join(', ')} come up most consistently for ${type.code}s. The common thread is ${type.workEnvironment.charAt(0).toLowerCase() + type.workEnvironment.slice(1)}`,
+  },
+  {
+    question: `Should an ${type.code} go into management?`,
+    answer: notes.managing,
+  },
+  {
+    question: `What jobs should an ${type.code} avoid?`,
+    answer: notes.avoid,
+  },
+  {
+    question: `Does personality type actually predict career success?`,
+    answer: 'Weakly. Type has little relationship with job performance and a moderate one with job satisfaction, so it is better used to identify working conditions that would wear you down than to decide what you are capable of. Vocational interest, measured by instruments like the Holland model, predicts satisfaction and tenure considerably better.',
+  },
+];
+
+const schema = [
+  article({
+    headline: `${type.code} careers: roles, traps and job search`,
+    description: `Career guide for ${type.code}s.`,
+    path,
+    published: SITE_BUILD_DATE,
+    modified: SITE_BUILD_DATE,
+    section: 'Careers',
+  }),
+  faqPage(faqs, path),
+];
+---
+<BaseLayout
+  title={`${type.code} Careers: Best Jobs, Traps & Job Search`}
+  description={`Career guide for ${type.code}s: the jobs that fit, how ${type.code}s behave at work, the career trap they fall into, and whether management suits them. Free, no signup.`}
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Careers', path: '/careers/' }, { name: `${type.code} careers`, path }]}
+  schema={schema}
+  ogType="article"
+  published={SITE_BUILD_DATE}
+  modified={SITE_BUILD_DATE}
+  layout="narrow"
+>
+  <section class="hero wrap">
+    <p class="eyebrow">{type.nickname} · career guide</p>
+    <h1><span class="type-code">{type.code}</span> careers</h1>
+    <p class="lede">
+      What {type.code}s are like as colleagues, which roles they stay in, where their careers
+      typically stall, and how to run a search that does not land them somewhere they will
+      leave in a year.
+    </p>
+  </section>
+
+  <div class="wrap prose">
+    <h2>How {type.code}s actually behave at work</h2>
+    <p>{notes.atWork}</p>
+
+    <h2>Careers that fit</h2>
+    <p>
+      Roles where {type.code}s tend to stay, with the reason each one works. Treat this as a
+      research shortlist: every type is represented in every profession, and interest matters
+      more than type for the question of what to work on.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <caption>{type.careers.length} roles that commonly suit {type.code}s</caption>
+        <thead><tr><th scope="col">Role</th><th scope="col">Why it fits</th></tr></thead>
+        <tbody>
+          {type.careers.map((career) => (
+            <tr><th scope="row">{career.title}</th><td>{career.why}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>The {type.code} career trap</h2>
+    <p>{notes.trap}</p>
+
+    <h2>Is management the right path?</h2>
+    <p>{notes.managing}</p>
+
+    <h2>Running a job search as an {type.code}</h2>
+    <p>{notes.jobSearch}</p>
+    <div class="callout">
+      <p>
+        <strong>Work environment matters more than job title.</strong> {type.workEnvironment}
+      </p>
+    </div>
+
+    <h2>What to avoid</h2>
+    <p>{notes.avoid}</p>
+    <p><strong>Specifically draining:</strong> {type.drains}</p>
+
+    <h2>Questions about {type.code} careers</h2>
+    {faqs.map((faq) => (
+      <details><summary>{faq.question}</summary><p>{faq.answer}</p></details>
+    ))}
+
+    <div class="callout">
+      <p>
+        <strong>Want the better instrument for this question?</strong> Personality type describes
+        how you like to work. The <a href="/tests/career-fit/">free career fit test</a> measures
+        vocational interest, which predicts job satisfaction and tenure considerably better —
+        36 questions, no email required.
+      </p>
+    </div>
+
+    <p>
+      Read the full <a href={`/types/${type.code.toLowerCase()}/`}>{type.code} personality profile</a>
+      for the cognitive stack, strengths, and blind spots behind all of this.
+    </p>
+
+    <h2>Career guides for other types</h2>
+    <ul class="pill-list">
+      {TYPES.map((other) => (
+        <li>
+          {other.code === type.code
+            ? <span aria-current="page"><strong>{other.code}</strong></span>
+            : <a href={`/careers/${other.code.toLowerCase()}/`}>{other.code}</a>}
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>

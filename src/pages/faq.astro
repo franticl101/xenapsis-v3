@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { faqPage } from '../lib/schema';
+import { TESTS } from '../data/tests';
+
+const PATH = '/faq/';
+const SECTIONS = [
+  {
+    heading: 'Taking a test',
+    faqs: [
+      { question: 'Do I need to give an email address?', answer: 'No. There is no email field anywhere on this site. Your full result appears on screen the moment you answer the last question.' },
+      { question: 'Do I need an account?', answer: 'No. There is nothing to create and nothing to log into. Xenapsis is a static site with no user accounts at all.' },
+      { question: 'How long do the tests take?', answer: 'The personality type test is 48 questions and takes about nine minutes. The career fit test is 36 questions, and the risk tolerance and assertiveness tests are 24 questions each, at roughly five to seven minutes.' },
+      { question: 'Can I pause and come back later?', answer: 'Answers are held in the page while you work, but they are not saved between visits — there is no account to store them against. Each test is short enough to finish in one sitting.' },
+      { question: 'Is any part of the result held back for payment?', answer: 'No. There is no paid tier, no premium report, and no fuller version of your result. What you see is everything the test produces.' },
+    ],
+  },
+  {
+    heading: 'Understanding your result',
+    faqs: [
+      { question: 'What do the percentages mean?', answer: 'The percentage shows how far your answers leaned from an exact tie toward one pole of that dimension. Fifty per cent is dead centre, not the bottom of a scale. It measures the consistency of your lean, not the quantity of a trait you possess.' },
+      { question: 'My result was close to 50%. Did the test fail?', answer: 'No — that is a genuine finding. It means you use both sides of that dimension about equally, which is common and worth knowing. A four-letter code alone would hide it entirely.' },
+      { question: 'Why did I get a different type elsewhere?', answer: 'Almost always because at least one dimension sits near the midpoint. A dimension scored at 51% is close to a coin toss and will legitimately flip between instruments, or between two sittings of the same instrument.' },
+      { question: 'Can my personality type change?', answer: 'The letters reported can change, particularly on near-tie dimensions. Underlying preferences are reasonably stable in adulthood, but people do develop their less-preferred sides with age and deliberate practice.' },
+    ],
+  },
+  {
+    heading: 'Accuracy and limits',
+    faqs: [
+      { question: 'Are these tests scientifically validated?', answer: 'They are not formally normed or peer-reviewed, and we do not claim they are. They are built using standard construction practice — balanced keying, adequate items per scale, continuous reporting — on published frameworks. For consequential decisions, use a properly normed instrument administered by a qualified practitioner.' },
+      { question: 'Can I use a result for hiring?', answer: 'No. Type-based instruments do not reliably predict job performance, and the publisher of the MBTI instrument says the same about theirs. Structured interviews and work-sample tests are considerably better predictors.' },
+      { question: 'Is this the official MBTI test?', answer: 'No. The MBTI instrument is a commercial product of The Myers-Briggs Company, normally administered through a certified practitioner. Xenapsis is independent and unaffiliated, and builds on the same underlying Jungian dimensions.' },
+    ],
+  },
+  {
+    heading: 'Privacy',
+    faqs: [
+      { question: 'What happens to my answers?', answer: 'Nothing leaves your browser. Scoring runs as a small script on the page you are already viewing, so your responses are never transmitted, stored, or attached to an identity. There is no server to receive them.' },
+      { question: 'Do you use tracking or advertising cookies?', answer: 'No. There are no advertising networks, no third-party trackers, and no cookies set for advertising purposes.' },
+      { question: 'Will you email me?', answer: 'We have no way to. There is no email field and no mailing list.' },
+    ],
+  },
+];
+
+const allFaqs = SECTIONS.flatMap((section) => section.faqs);
+---
+<BaseLayout
+  title="Xenapsis FAQ: Tests, Results and Privacy"
+  description="Answers about taking Xenapsis tests, reading your percentages, how accurate the results are, and what happens to your answers. No email or account needed."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'FAQ', path: PATH }]}
+  schema={[faqPage(allFaqs, PATH)]}
+  layout="narrow"
+>
+  <section class="hero wrap">
+    <p class="eyebrow">{allFaqs.length} questions answered</p>
+    <h1>Frequently asked questions</h1>
+    <p class="lede">
+      How the tests work, how to read a result, what they are and are not good for, and
+      what happens to your answers.
+    </p>
+  </section>
+
+  <div class="wrap prose">
+    {SECTIONS.map((section) => (
+      <section>
+        <h2>{section.heading}</h2>
+        {section.faqs.map((faq) => (
+          <details><summary>{faq.question}</summary><p>{faq.answer}</p></details>
+        ))}
+      </section>
+    ))}
+
+    <h2>Still looking for something?</h2>
+    <p>
+      The <a href="/methodology/">methodology page</a> covers item design and the scoring maths
+      in detail, and <a href="/guides/are-personality-tests-accurate/">the accuracy guide</a>
+      covers what the research does and does not support.
+    </p>
+    <p>Or just start: {TESTS.map((test, i) => (<>{i > 0 && ', '}<a href={test.path}>{test.name.toLowerCase()}</a></>))}.</p>
+  </div>
+</BaseLayout>

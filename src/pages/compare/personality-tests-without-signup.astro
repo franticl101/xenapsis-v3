@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { faqPage, article } from '../../lib/schema';
+import { SITE_BUILD_DATE } from '../../lib/dates';
+import { TESTS } from '../../data/tests';
+
+const PATH = '/compare/personality-tests-without-signup/';
+const faqs = [
+  { question: 'Are there personality tests that require no signup at all?', answer: 'Yes. Every Xenapsis test shows its full result on screen with no email step, no account and no paid tier. Scoring runs in your browser, so there is no server receiving your answers.' },
+  { question: 'Why do most free personality tests ask for an email?', answer: 'Because the result is what they trade for your contact details, and a visitor who has just finished a ten-minute test is the most likely they will ever be to hand one over. That is why the gate appears after the questions rather than before.' },
+  { question: 'Is a no-signup test lower quality?', answer: 'Not inherently. Gating has nothing to do with instrument design. What matters is whether items are balanced for direction, whether the result reports preference strength rather than a bare label, and whether the site is honest about what the result can predict.' },
+];
+---
+<BaseLayout
+  title="Personality Tests Without Signup or Email"
+  description="Which personality tests give you the whole result without an email address or account, why most of them do not, and what to check before you start answering."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Compare', path: '/compare/' }, { name: 'Without signup', path: PATH }]}
+  schema={[
+    article({ headline: 'Personality tests without signup or email', description: 'What an ungated personality test looks like and how to identify one.', path: PATH, published: SITE_BUILD_DATE, modified: SITE_BUILD_DATE, section: 'Compare' }),
+    faqPage(faqs, PATH),
+  ]}
+  ogType="article"
+  published={SITE_BUILD_DATE}
+  modified={SITE_BUILD_DATE}
+  layout="narrow"
+>
+  <section class="hero wrap">
+    <p class="eyebrow">Comparison</p>
+    <h1>Personality tests without signup</h1>
+    <p class="lede">
+      The email step is the single most common friction point in free personality testing,
+      and it is entirely a business decision — nothing about scoring a test requires it.
+    </p>
+  </section>
+
+  <div class="wrap prose">
+    <h2>What gets gated, and where</h2>
+    <p>
+      Gating appears at four points in a typical test flow. Knowing which one you are looking at
+      tells you what the site wants from you.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <caption>Where tests commonly place a gate</caption>
+        <thead><tr><th scope="col">Gate position</th><th scope="col">What it usually signals</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Before the questions</th><td>Rare, and usually means an account-based product rather than a free test.</td></tr>
+          <tr><th scope="row">Immediately after submitting</th><td>Lead capture. Your address is the price of the result you already earned.</td></tr>
+          <tr><th scope="row">Part-way through the result</th><td>Freemium. A summary is free; the sections that answer your actual question are not.</td></tr>
+          <tr><th scope="row">Nowhere</th><td>The result is the product. Check there is also no paid tier behind it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Why "no signup" is worth something beyond convenience</h2>
+    <p>
+      Your answers to a personality test are a description of how you behave, what you avoid,
+      and where you struggle. On their own they are not identifying. Attached to an email
+      address, they become a profile.
+    </p>
+    <p>
+      A test that scores locally sidesteps this completely. If the calculation happens in your
+      browser, no server ever receives your responses, so there is no record to secure, leak,
+      subpoena or sell. That is a stronger privacy position than any policy document, because it
+      is structural rather than a promise.
+    </p>
+
+    <h2>How Xenapsis is built</h2>
+    <ul>
+      <li><strong>No email field exists</strong> on any page of this site.</li>
+      <li><strong>No account</strong> — there is nothing to create and nothing to log into.</li>
+      <li><strong>No paid tier.</strong> Every result is complete. There is no fuller version.</li>
+      <li><strong>No answer upload.</strong> The site is static files; scoring is a small script running on the page you are already viewing.</li>
+      <li><strong>No advertising or third-party trackers.</strong></li>
+    </ul>
+    <p>All {TESTS.length} assessments work this way:</p>
+    <ul>
+      {TESTS.map((test) => (
+        <li><a href={test.path}>{test.name}</a> — {test.questions.length} questions, about {test.minutes} minutes</li>
+      ))}
+    </ul>
+
+    <h2>Common questions</h2>
+    {faqs.map((faq) => (
+      <details><summary>{faq.question}</summary><p>{faq.answer}</p></details>
+    ))}
+
+    <p>
+      For more on why the gate exists and what your address is worth at that exact moment, see
+      <a href="/guides/personality-test-without-email/">how to take a personality test without email</a>.
+    </p>
+  </div>
+</BaseLayout>

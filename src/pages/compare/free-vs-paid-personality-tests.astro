@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { faqPage, article } from '../../lib/schema';
+import { SITE_BUILD_DATE } from '../../lib/dates';
+
+const PATH = '/compare/free-vs-paid-personality-tests/';
+const faqs = [
+  { question: 'Are paid personality tests more accurate than free ones?', answer: 'Not automatically. Price reflects distribution and support costs more than instrument quality. What raises accuracy is balanced item design, adequate items per scale, and reporting continuous scores rather than binary labels — none of which requires a fee.' },
+  { question: 'When is it worth paying for a personality assessment?', answer: 'When you need a professionally interpreted result for a specific decision, when an employer or programme requires a particular instrument, or when you want a properly normed clinical or occupational assessment administered by a qualified practitioner. Those are real reasons. Wanting a nicer PDF is not.' },
+  { question: 'What do paid reports usually add?', answer: 'Longer prose, charts, team or relationship comparisons, and sometimes a debrief with a practitioner. The underlying scores are typically the same ones the free version already calculated.' },
+];
+---
+<BaseLayout
+  title="Free vs Paid Personality Tests: What You Get"
+  description="What a paid personality report actually adds over a free one, when paying is genuinely worth it, and when you are buying presentation rather than accuracy."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Compare', path: '/compare/' }, { name: 'Free vs paid', path: PATH }]}
+  schema={[
+    article({ headline: 'Free vs paid personality tests', description: 'What paying actually buys, and when it is worth it.', path: PATH, published: SITE_BUILD_DATE, modified: SITE_BUILD_DATE, section: 'Compare' }),
+    faqPage(faqs, PATH),
+  ]}
+  ogType="article"
+  published={SITE_BUILD_DATE}
+  modified={SITE_BUILD_DATE}
+  layout="narrow"
+>
+  <section class="hero wrap">
+    <p class="eyebrow">Comparison</p>
+    <h1>Free vs paid personality tests</h1>
+    <p class="lede">
+      Paid reports are not usually more accurate. They are usually longer, better presented,
+      and occasionally interpreted by a person — which is sometimes worth paying for and often
+      is not.
+    </p>
+  </section>
+
+  <div class="wrap prose">
+    <h2>What actually drives accuracy</h2>
+    <p>
+      It is worth being precise about this, because the assumption that paid means better is
+      doing a lot of unexamined work. The things that make a self-report instrument more
+      trustworthy are:
+    </p>
+    <ul>
+      <li><strong>Enough items per scale.</strong> Twelve items measuring one dimension is more stable than three.</li>
+      <li><strong>Balanced wording.</strong> Half the items reversed, so agreeing with everything cannot manufacture an extreme score.</li>
+      <li><strong>Continuous scores, reported.</strong> Showing the strength of a preference rather than rounding it to a label.</li>
+      <li><strong>Honest framing.</strong> Not claiming predictive power the evidence does not support.</li>
+    </ul>
+    <p>
+      None of those cost money to implement. All of them are design decisions, and a free test
+      can make every one of them correctly — <a href="/methodology/">ours does</a>.
+    </p>
+
+    <h2>What you are usually buying</h2>
+    <div class="table-scroll">
+      <table>
+        <caption>Typical differences between a free result and a paid report</caption>
+        <thead><tr><th scope="col">Feature</th><th scope="col">Usually free</th><th scope="col">Usually paid</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">The underlying scores</th><td>Yes</td><td>Same scores</td></tr>
+          <tr><th scope="row">Preference strengths</th><td>Sometimes</td><td>Usually</td></tr>
+          <tr><th scope="row">Long-form profile prose</th><td>Short version</td><td>Yes, often 20+ pages</td></tr>
+          <tr><th scope="row">Downloadable PDF</th><td>Rarely</td><td>Yes</td></tr>
+          <tr><th scope="row">Team or relationship comparison</th><td>Rarely</td><td>Yes</td></tr>
+          <tr><th scope="row">Debrief with a practitioner</th><td>No</td><td>Sometimes, at higher prices</td></tr>
+          <tr><th scope="row">Formal norming and validation data</th><td>Rarely published</td><td>Sometimes, for occupational instruments</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>When paying is genuinely the right call</h2>
+    <p>There are real cases, and they are more specific than "I want a better result".</p>
+    <ul>
+      <li><strong>A third party requires a specific instrument.</strong> If an employer, coach or programme has asked for a named assessment, you need that one.</li>
+      <li><strong>You want human interpretation.</strong> A practitioner debrief is a genuinely different product from a document, and it is the part worth the money.</li>
+      <li><strong>The decision is high-stakes.</strong> Career change, team restructure, clinical questions. A properly normed instrument administered by someone qualified is appropriate here; a free web test is not.</li>
+      <li><strong>You need occupational norms.</strong> Comparing against a specific population requires normed data that free tests generally do not have.</li>
+    </ul>
+
+    <h2>When it is not</h2>
+    <p>
+      If your question is "what am I like, roughly, and what does that suggest about how I want
+      to work", a well-built free test answers it. Paying converts the same scores into longer
+      prose and a nicer layout.
+    </p>
+    <div class="callout warn">
+      <p>
+        <strong>One thing worth paying attention to either way:</strong> no instrument in this
+        family, free or paid, reliably predicts job performance. If something is sold on that
+        basis, the price is not the problem with it.
+        <a href="/guides/are-personality-tests-accurate/">More on what the research supports.</a>
+      </p>
+    </div>
+
+    <h2>Common questions</h2>
+    {faqs.map((faq) => (
+      <details><summary>{faq.question}</summary><p>{faq.answer}</p></details>
+    ))}
+
+    <p>
+      Xenapsis has no paid tier at all — every result is complete.
+      <a href="/tests/">See all four tests →</a>
+    </p>
+  </div>
+</BaseLayout>

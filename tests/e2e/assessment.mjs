@@ -52,7 +52,7 @@ const check = (name, fn) => checks.push({ name, fn });
 /** Answer every question with `pick(index)` and submit. */
 async function complete(path, pick) {
   await page.goto(`${BASE}${path}`, { waitUntil: 'load' });
-  const count = await page.locator('fieldset.q').count();
+  const count = await page.locator('.q[role=radiogroup]').count();
   for (let i = 0; i < count; i += 1) {
     await page.locator(`#q${i}-${pick(i)}`).check({ force: true });
   }
@@ -65,7 +65,7 @@ check('submit is gated until every question is answered', async () => {
   await page.goto(`${BASE}/tests/personality-type/`, { waitUntil: 'load' });
   assert.equal(await page.locator('[data-submit]').isDisabled(), true, 'submit should start disabled');
 
-  const count = await page.locator('fieldset.q').count();
+  const count = await page.locator('.q[role=radiogroup]').count();
   for (let i = 0; i < count - 1; i += 1) await page.locator(`#q${i}-2`).check({ force: true });
   assert.equal(await page.locator('[data-submit]').isDisabled(), true, 'still disabled with one unanswered');
 

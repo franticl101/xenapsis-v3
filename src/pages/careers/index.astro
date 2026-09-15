@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { TYPES } from '../../data/types';
+import { itemList, faqPage } from '../../lib/schema';
+
+const PATH = '/careers/';
+const faqs = [
+  {
+    question: 'Can a personality test tell me what job to do?',
+    answer: 'Not on its own, and be wary of any test that claims otherwise. Personality type has a weak relationship with job performance. What it usefully describes is the working conditions you are likely to find sustaining or draining, which narrows a search rather than deciding it.',
+  },
+  {
+    question: 'What predicts job satisfaction better than personality type?',
+    answer: 'Vocational interest. The six-theme Holland model — the basis of most professional careers guidance — predicts satisfaction and how long people stay in a role considerably better than type does. Our free career fit test measures it in 36 questions.',
+  },
+  {
+    question: 'Should I rule out a career because my type is not listed for it?',
+    answer: 'No. Every type is represented in every profession. These pages describe where a type tends to find the work sustaining, not where they are permitted to go. Interest, skill, and circumstance all matter more.',
+  },
+];
+---
+<BaseLayout
+  title="Careers by Personality Type — All 16 Guides"
+  description="Career guides for all 16 personality types: how each type works, where careers stall, whether management fits, and how to run a job search. Free, no signup."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Careers', path: PATH }]}
+  schema={[
+    itemList('Career guides by personality type', TYPES.map((t) => ({ name: `${t.code} careers`, path: `/careers/${t.code.toLowerCase()}/` }))),
+    faqPage(faqs, PATH),
+  ]}
+>
+  <section class="hero wrap">
+    <p class="eyebrow">16 career guides</p>
+    <h1>Careers by personality type</h1>
+    <p class="lede">
+      One guide per type, covering how that type actually behaves in a job, the career trap it
+      most often falls into, whether management is worth pursuing, and how to run a search.
+      Written to be useful rather than flattering.
+    </p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/tests/career-fit/">Take the career fit test</a>
+      <a class="btn btn-ghost" href="/tests/personality-type/">Find your type first</a>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head">
+      <h2>Pick your type</h2>
+      <p>Each guide is a standalone read — you do not need to have taken the test.</p>
+    </div>
+    <div class="grid grid-4">
+      {TYPES.map((type) => (
+        <a class="card" href={`/careers/${type.code.toLowerCase()}/`}>
+          <h3><span class="type-code">{type.code}</span> careers</h3>
+          <p>{type.careers.slice(0, 3).map((c) => c.title).join(' · ')}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap prose">
+      <h2>Read these guides with the right expectation</h2>
+      <p>
+        There is a large gap between what personality-type career content usually promises and
+        what the underlying research supports. The honest version is this: type is a
+        <strong>weak predictor of job performance</strong> and a
+        <strong>moderate predictor of job satisfaction</strong>. It tells you relatively little
+        about whether you could do a job well, and rather more about whether the daily experience
+        of it would wear you down.
+      </p>
+      <p>
+        That is still worth something. Most people who leave a role do so because of conditions —
+        interruption, isolation, politics, pace, whether the work has a visible point — rather than
+        because they could not do the tasks. Those conditions are exactly what type describes.
+      </p>
+      <p>
+        If your actual question is "what should I do for work", the better instrument is the
+        <a href="/tests/career-fit/">career fit test</a>, which measures vocational interest. Use
+        the type guides to understand <em>how</em> you want to work, and the interest profile to
+        narrow <em>what</em> you work on.
+      </p>
+
+      <h2>Common questions</h2>
+      {faqs.map((faq) => (
+        <details><summary>{faq.question}</summary><p>{faq.answer}</p></details>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

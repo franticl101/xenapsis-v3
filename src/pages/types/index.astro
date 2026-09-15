@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { TYPES, DICHOTOMIES } from '../../data/types';
+import { itemList } from '../../lib/schema';
+
+const PATH = '/types/';
+const GROUPS = [
+  { name: 'Analysts', codes: ['INTJ', 'INTP', 'ENTJ', 'ENTP'], blurb: 'Intuitive and thinking. Drawn to systems, logic, and the question behind the question.' },
+  { name: 'Diplomats', codes: ['INFJ', 'INFP', 'ENFJ', 'ENFP'], blurb: 'Intuitive and feeling. Drawn to meaning, potential, and what work does to people.' },
+  { name: 'Sentinels', codes: ['ISTJ', 'ISFJ', 'ESTJ', 'ESFJ'], blurb: 'Sensing and judging. Drawn to reliability, structure, and keeping what works working.' },
+  { name: 'Explorers', codes: ['ISTP', 'ISFP', 'ESTP', 'ESFP'], blurb: 'Sensing and perceiving. Drawn to the concrete present, skill, and room to move.' },
+];
+const byCode = new Map(TYPES.map((t) => [t.code, t]));
+---
+<BaseLayout
+  title="All 16 Personality Types, Explained in Depth"
+  description="Every one of the 16 personality types, with cognitive stacks, honest strengths and blind spots, and the careers each type actually stays in. Free, no signup."
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Personality types', path: PATH }]}
+  schema={[itemList('The 16 personality types', TYPES.map((t) => ({ name: `${t.code} — ${t.nickname}`, path: `/types/${t.code.toLowerCase()}/` })))]}
+>
+  <section class="hero wrap">
+    <p class="eyebrow">16 types · 4 groups</p>
+    <h1>All 16 personality types</h1>
+    <p class="lede">
+      Each profile covers the cognitive function stack, what the type looks like at its best
+      and under stress, and the careers people of that type tend to stay in — not just the ones
+      they get told to want. Every page is free and complete.
+    </p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/tests/personality-type/">Not sure of your type? Take the test</a>
+    </div>
+  </section>
+
+  {GROUPS.map((group) => (
+    <section class="section wrap">
+      <div class="section-head">
+        <h2>{group.name}</h2>
+        <p>{group.blurb}</p>
+      </div>
+      <div class="grid grid-4">
+        {group.codes.map((code) => {
+          const type = byCode.get(code)!;
+          return (
+            <a class="card" href={`/types/${code.toLowerCase()}/`}>
+              <h3><span class="type-code">{code}</span></h3>
+              <p><strong>{type.nickname}</strong></p>
+              <p style="margin-top:.4rem">{type.summary}</p>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  ))}
+
+  <section class="section tint">
+    <div class="wrap prose">
+      <h2>How the four letters are built</h2>
+      <p>
+        Each type is a combination of four preferences. A preference is not an ability and not a
+        box — it describes which of two equally valid options you reach for first when you are not
+        making a deliberate effort.
+      </p>
+      <div class="table-scroll">
+        <table>
+          <caption>The four dimensions</caption>
+          <thead><tr><th scope="col">Dimension</th><th scope="col">What it describes</th></tr></thead>
+          <tbody>
+            {DICHOTOMIES.map((d) => (
+              <tr>
+                <th scope="row">{d.leftName} ({d.left}) / {d.rightName} ({d.right})</th>
+                <td>{d.question}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The letter alone hides the most useful information, which is <em>how strongly</em> you lean.
+        Someone at 51% Introversion and someone at 94% share a letter and almost nothing else. Our
+        <a href="/tests/personality-type/">personality type test</a> leads with that percentage, and
+        <a href="/guides/what-do-personality-test-percentages-mean/">this guide</a> explains how to read it.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { TYPES, type TypeProfile } from '../../data/types';
+import { article, faqPage } from '../../lib/schema';
+import { SITE_BUILD_DATE } from '../../lib/dates';
+
+export function getStaticPaths() {
+  return TYPES.map((type) => ({ params: { code: type.code.toLowerCase() }, props: { type } }));
+}
+
+const { type } = Astro.props as { type: TypeProfile };
+const path = `/types/${type.code.toLowerCase()}/`;
+const letters = type.code.split('');
+
+const faqs = [
+  {
+    question: `Is ${type.code} a rare personality type?`,
+    answer: `${type.population} Rarity says nothing about the value of a type — it only reflects how the four preferences happen to combine across a population.`,
+  },
+  {
+    question: `What careers suit an ${type.code}?`,
+    answer: `${type.careers.slice(0, 4).map((c) => c.title).join(', ')} and similar roles come up repeatedly for ${type.code}s, because they reward ${type.careers[0].why.charAt(0).toLowerCase() + type.careers[0].why.slice(1, -1)}. Type is a weak predictor of performance, though, so treat these as places to look rather than a shortlist.`,
+  },
+  {
+    question: `Can my type change over time?`,
+    answer: `Your reported letters can change, particularly on any dimension where you scored near 50%. Underlying preferences tend to be fairly stable in adulthood, but people develop their less-preferred sides with age and practice, and a near-tie can flip between two sittings of the same test.`,
+  },
+  {
+    question: `How do I know if I am really an ${type.code}?`,
+    answer: `Read the "at their best" and "under stress" sections below rather than the strengths list — flattering traits feel true for almost everyone, whereas the stress description is specific enough to be wrong. If it does not describe you, check the type that differs by your weakest letter.`,
+  },
+];
+
+const schema = [
+  article({
+    headline: `${type.code} personality type: ${type.nickname}`,
+    description: type.metaDescription,
+    path,
+    published: SITE_BUILD_DATE,
+    modified: SITE_BUILD_DATE,
+    section: 'Personality types',
+  }),
+  faqPage(faqs, path),
+];
+---
+<BaseLayout
+  title={`${type.code} Personality Type: Traits, Stack & Careers`}
+  description={type.metaDescription}
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Personality types', path: '/types/' }, { name: type.code, path }]}
+  schema={schema}
+  ogType="article"
+  published={SITE_BUILD_DATE}
+  modified={SITE_BUILD_DATE}
+  layout="narrow"
+>
+  <section class="hero wrap">
+    <p class="eyebrow">{type.nickname}</p>
+    <h1><span class="type-code">{type.code}</span> personality type</h1>
+    <p class="lede">{type.summary}</p>
+    <ul class="pill-list" style="margin-top:1.25rem">
+      {letters.map((letter, i) => <li><span><strong>{letter}</strong> — {['Energy', 'Information', 'Decisions', 'Structure'][i]}</span></li>)}
+      <li><span>{type.population}</span></li>
+    </ul>
+  </section>
+
+  <div class="wrap prose">
+    <h2>{type.code} at their best</h2>
+    <p>{type.atBest}</p>
+
+    <h2>{type.code} under stress</h2>
+    <p>{type.underStress}</p>
+    <div class="callout">
+      <p>
+        The stress description is usually the more reliable identity check. Strengths lists feel
+        true for nearly everyone; the specific way a type falls apart is much harder to
+        mistake for your own.
+      </p>
+    </div>
+
+    <h2>Cognitive function stack</h2>
+    <p>
+      The four letters are shorthand for an ordered set of mental processes. The first is the one
+      you lead with; the last is the one that surfaces, awkwardly, when you are depleted.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <caption>How an {type.code} processes the world, in order of fluency</caption>
+        <thead><tr><th scope="col">Position</th><th scope="col">Function</th><th scope="col">What it does</th></tr></thead>
+        <tbody>
+          {type.stack.map((slot) => (
+            <tr><th scope="row">{slot.role}</th><td>{slot.fn}</td><td>{slot.gloss}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Strengths</h2>
+    <ul>{type.strengths.map((item) => <li>{item}</li>)}</ul>
+
+    <h2>Blind spots</h2>
+    <p>Written plainly rather than as disguised compliments, because the useful version of this list is the uncomfortable one.</p>
+    <ul>{type.blindSpots.map((item) => <li>{item}</li>)}</ul>
+
+    <h2>Careers that suit {type.code}s</h2>
+    <p>
+      These are roles where {type.code}s tend to stay, rather than roles they are told to want.
+      Type is a weak predictor of job performance, so read this as a shortlist to research, not
+      a verdict — <a href="/tests/career-fit/">the career fit test</a> measures vocational interest,
+      which predicts satisfaction considerably better.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <caption>Common {type.code} career directions</caption>
+        <thead><tr><th scope="col">Role</th><th scope="col">Why it fits</th></tr></thead>
+        <tbody>
+          {type.careers.map((career) => (
+            <tr><th scope="row">{career.title}</th><td>{career.why}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p><a href={`/careers/${type.code.toLowerCase()}/`}>Read the full {type.code} careers guide →</a></p>
+
+    <h2>Where {type.code}s do their best work</h2>
+    <p>{type.workEnvironment}</p>
+    <h3>What drains them</h3>
+    <p>{type.drains}</p>
+
+    <h2>{type.code}s with other people</h2>
+    <p>{type.withOthers}</p>
+
+    <h2>Questions about the {type.code} type</h2>
+    {faqs.map((faq) => (
+      <details><summary>{faq.question}</summary><p>{faq.answer}</p></details>
+    ))}
+
+    <div class="callout">
+      <p>
+        <strong>Not sure this is you?</strong> Take the
+        <a href="/tests/personality-type/">free personality type test</a> — 48 questions, about
+        nine minutes, and it reports how strongly you lean on each dimension rather than just
+        handing you four letters. No email required.
+      </p>
+    </div>
+
+    <h2>All 16 types</h2>
+    <ul class="pill-list">
+      {TYPES.map((other) => (
+        <li>
+          {other.code === type.code
+            ? <span aria-current="page"><strong>{other.code}</strong></span>
+            : <a href={`/types/${other.code.toLowerCase()}/`}>{other.code}</a>}
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>

@@ -26,6 +26,12 @@ export interface Props {
   /** ISO dates surfaced as article metadata and freshness signals. */
   published?: string;
   modified?: string;
+  /**
+   * Content width for the page. "wide" suits hub pages with card grids;
+   * "narrow" suits article-style pages. Declared once here so the hero,
+   * body and breadcrumbs cannot drift out of alignment with each other.
+   */
+  layout?: 'wide' | 'narrow';
 }
 
 const {
@@ -39,6 +45,7 @@ const {
   ogType = 'website',
   published,
   modified,
+  layout = 'wide',
 } = Astro.props as Props;
 
 const pathname = Astro.url.pathname;
@@ -100,7 +107,7 @@ const robots = noindex ? 'noindex, follow' : 'index, follow, max-image-preview:l
 
     <script type="application/ld+json" is:inline set:html={jsonLd} />
   </head>
-  <body>
+  <body data-layout={layout}>
     <a class="skip-link" href="#main">Skip to content</a>
     <Header />
     {breadcrumbs.length > 0 && (
