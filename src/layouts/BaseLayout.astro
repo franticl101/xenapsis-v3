@@ -1,0 +1,124 @@
+---
+import { SITE, abs } from '../lib/site';
+import { assertTitle, assertDescription } from '../lib/seo';
+import { graph, breadcrumbs as crumbSchema, type Json } from '../lib/schema';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface Props {
+  /** Required. Validated at build time — a missing or generic title fails the build. */
+  title: string;
+  /** Required. Validated at build time — a missing or thin description fails the build. */
+  description: string;
+  /** Append " | Xenapsis". Off for pages whose title already carries the brand. */
+  brand?: boolean;
+  /** Extra JSON-LD nodes merged into the page @graph. */
+  schema?: Json[];
+  /** Breadcrumb trail; emits BreadcrumbList and the visible breadcrumb nav. */
+  breadcrumbs?: { name: string; path: string }[];
+  /** Set for pages that must stay out of the index (e.g. thin utility pages). */
+  noindex?: boolean;
+  /** Social share image path, relative to the site root. */
+  image?: string;
+  /** "article" for guides, otherwise "website". */
+  ogType?: 'website' | 'article';
+  /** ISO dates surfaced as article metadata and freshness signals. */
+  published?: string;
+  modified?: string;
+}
+
+const {
+  title,
+  description,
+  brand = true,
+  schema = [],
+  breadcrumbs = [],
+  noindex = false,
+  image = '/og/xenapsis-default.png',
+  ogType = 'website',
+  published,
+  modified,
+} = Astro.props as Props;
+
+const pathname = Astro.url.pathname;
+
+// Guards run here, during the build. A page cannot render without valid metadata.
+const composed = brand ? `${String(title).trim()} | ${SITE.name}` : String(title).trim();
+assertTitle(title, pathname, composed);
+const metaDescription = assertDescription(description, pathname);
+
+const canonical = abs(pathname);
+const ogImage = abs(image);
+const nodes: Json[] = [...schema];
+if (breadcrumbs.length > 0) nodes.push(crumbSchema(breadcrumbs));
+const jsonLd = graph(nodes);
+const robots = noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{composed}</title>
+    <meta name="description" content={metaDescription} />
+    <meta name="robots" content={robots} />
+
+    <!-- Absolute https canonical. The reference audit found protocol-relative
+         canonicals ("//host/path"), which search engines resolve inconsistently. -->
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:title" content={composed} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${title} — ${SITE.name}`} />
+    {published && <meta property="article:published_time" content={published} />}
+    {modified && <meta property="article:modified_time" content={modified} />}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={SITE.twitter} />
+    <meta name="twitter:title" content={composed} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="theme-color" content="#0b1020" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/xenapsis-logo.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name} guides`} href={abs('/rss.xml')} />
+
+    <script type="application/ld+json" is:inline set:html={jsonLd} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    {breadcrumbs.length > 0 && (
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+          {breadcrumbs.map((c, i) => (
+            <li>
+              {i < breadcrumbs.length - 1 ? (
+                <a href={c.path}>{c.name}</a>
+              ) : (
+                <span aria-current="page">{c.name}</span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    <main id="main"><slot /></main>
+    <Footer />
+  </body>
+</html>

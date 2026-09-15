@@ -1,0 +1,26 @@
+---
+import { PRIMARY_NAV, isActive } from '../lib/nav';
+import { SITE } from '../lib/site';
+import Logo from './Logo.astro';
+
+const current = Astro.url.pathname;
+---
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label={`${SITE.name} home`}>
+      <Logo />
+      <span>{SITE.name}</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        {PRIMARY_NAV.map((item) => (
+          <li>
+            <a href={item.path} aria-current={isActive(current, item.path) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>

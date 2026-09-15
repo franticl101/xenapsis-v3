@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { TESTS } from '../data/tests';
+import { TYPES } from '../data/types';
+import { itemList, faqPage } from '../lib/schema';
+
+const PATH = '/';
+
+const HOME_FAQS = [
+  {
+    question: 'Do I need to give an email address to see my results?',
+    answer:
+      'No. Xenapsis shows your full results on screen the moment you finish. There is no email gate, no account, no "unlock your report" step, and no payment page between you and your scores.',
+  },
+  {
+    question: 'How long does the personality type test take?',
+    answer:
+      'The personality type test is 48 questions and takes about 8 to 10 minutes. The shorter assessments take 4 to 6 minutes each.',
+  },
+  {
+    question: 'Is Xenapsis really free?',
+    answer:
+      'Yes. Every assessment and every result page is free, with no paid tier held back. The tests are funded as an educational resource rather than as a lead-generation funnel.',
+  },
+  {
+    question: 'What happens to my answers?',
+    answer:
+      'Scoring runs entirely in your browser. Your answers are not transmitted to a server, stored in an account, or sold to advertisers, because there is no account to attach them to.',
+  },
+];
+
+const schema = [
+  itemList('Free assessments on Xenapsis', TESTS.map((t) => ({ name: t.name, path: t.path }))),
+  faqPage(HOME_FAQS, PATH),
+];
+---
+<BaseLayout
+  title="Free Personality Tests — No Email, No Signup"
+  description="Take a free personality test and get instant percentage-strength results. No email address, no account, no paywall — your full report appears the second you finish."
+  schema={schema}
+>
+  <section class="hero wrap">
+    <p class="eyebrow">No email · No account · No paywall</p>
+    <h1>Free personality tests that just give you the results</h1>
+    <p class="lede">
+      Most personality tests make you finish the questions, then ask for your email before
+      showing you anything. Xenapsis doesn't. Answer the questions, see your full
+      percentage-strength profile immediately, and keep it.
+    </p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/tests/personality-type/">Take the personality type test</a>
+      <a class="btn btn-ghost" href="/tests/">See all {TESTS.length} tests</a>
+    </div>
+    <ul class="trust-row">
+      <li><Icon name="check" /> Results shown instantly on screen</li>
+      <li><Icon name="lock" /> Scored in your browser, never uploaded</li>
+      <li><Icon name="bolt" /> 48 questions, about 9 minutes</li>
+    </ul>
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head">
+      <h2>Choose an assessment</h2>
+      <p>Every test below is complete and free. Nothing is held back behind a report upgrade.</p>
+    </div>
+    <div class="grid grid-2">
+      {TESTS.map((test) => (
+        <a class="card" href={test.path}>
+          <h3>{test.name}</h3>
+          <p>{test.cardBlurb}</p>
+          <p class="meta">
+            <span><Icon name="chart" size={14} /> {test.questions.length} questions</span>
+            <span><Icon name="clock" size={14} /> ~{test.minutes} min</span>
+          </p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>What makes a result worth reading</h2>
+        <p>Three things we do differently, and why each one matters to you.</p>
+      </div>
+      <div class="grid grid-3">
+        <article class="card">
+          <h3>Strength, not just a label</h3>
+          <p>
+            You don't get a bare four-letter code. Each of the four dimensions reports how
+            strongly you lean, as a percentage, so a 52% preference reads clearly as the
+            near-tie it actually is instead of masquerading as a defining trait.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Balanced question design</h3>
+          <p>
+            Half the items on each scale are reverse-keyed, so agreeing with everything
+            can't push you to an extreme. This controls for acquiescence bias, one of the
+            most common ways a casual quiz produces a flattering but meaningless profile.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Honest about the limits</h3>
+          <p>
+            Type-based instruments are useful for reflection and poor at prediction. We say
+            so plainly in <a href="/guides/are-personality-tests-accurate/">our accuracy guide</a>,
+            including where the research disagrees with the framework.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head">
+      <h2>Explore all 16 personality types</h2>
+      <p>
+        Each type page covers the cognitive stack, strengths, friction points, and the careers
+        people of that type tend to stay in — not just the ones they're told to want.
+      </p>
+    </div>
+    <ul class="pill-list">
+      {TYPES.map((type) => (
+        <li><a href={`/types/${type.code.toLowerCase()}/`}><span class="type-code">{type.code}</span> · {type.nickname}</a></li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap prose">
+      <h2>Common questions</h2>
+      {HOME_FAQS.map((faq) => (
+        <details>
+          <summary>{faq.question}</summary>
+          <p>{faq.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

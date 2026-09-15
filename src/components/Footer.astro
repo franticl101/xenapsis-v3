@@ -1,0 +1,26 @@
+---
+import { FOOTER_NAV } from '../lib/nav';
+import { SITE } from '../lib/site';
+
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="cols">
+      {FOOTER_NAV.map((col) => (
+        <section>
+          <h2>{col.heading}</h2>
+          <ul>
+            {col.items.map((item) => (
+              <li><a href={item.path}>{item.label}</a></li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+    <p class="legal">
+      &copy; {year} {SITE.name}. {SITE.tagline} Xenapsis assessments are educational
+      instruments for self-reflection — they are not clinical, diagnostic, or hiring tools.
+    </p>
+  </div>
+</footer>

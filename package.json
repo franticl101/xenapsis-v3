@@ -1,0 +1,19 @@
+{
+  "name": "xenapsis-v3",
+  "type": "module",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Xenapsis - free, no-signup personality and psychometric assessments.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/seo-audit.mjs",
+    "preview": "astro preview",
+    "audit": "node scripts/seo-audit.mjs",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.2"
+  }
+}
