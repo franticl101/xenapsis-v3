@@ -11,7 +11,7 @@ const guides = (await getCollection('guides')).sort((a, b) => a.data.order - b.d
   title="Guides to Reading a Personality Result"
   description="Plain guides to personality testing: what the research supports, what the percentages mean, and how to get a real result without handing over your email address."
   breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Guides', path: PATH }]}
-  schema={[itemList('Xenapsis guides', guides.map((g) => ({ name: g.data.title, path: `/guides/${g.id}/` })))]}
+  schema={[itemList('Upfront guides', guides.map((g) => ({ name: g.data.title, path: `/guides/${g.id}/` })))]}
 >
   <section class="hero wrap">
     <p class="eyebrow">{guides.length} guides</p>

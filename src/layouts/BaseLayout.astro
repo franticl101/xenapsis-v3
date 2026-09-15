@@ -11,7 +11,7 @@ export interface Props {
   title: string;
   /** Required. Validated at build time — a missing or thin description fails the build. */
   description: string;
-  /** Append " | Xenapsis". Off for pages whose title already carries the brand. */
+  /** Append " | Upfront". Off for pages whose title already carries the brand. */
   brand?: boolean;
   /** Extra JSON-LD nodes merged into the page @graph. */
   schema?: Json[];
@@ -41,7 +41,7 @@ const {
   schema = [],
   breadcrumbs = [],
   noindex = false,
-  image = '/og/xenapsis-default.png',
+  image = '/og/upfront-default.png',
   ogType = 'website',
   published,
   modified,
@@ -101,7 +101,7 @@ const robots = noindex ? 'noindex, follow' : 'index, follow, max-image-preview:l
     <meta name="theme-color" content="#0b1020" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/brand/xenapsis-logo.svg" />
+    <link rel="apple-touch-icon" href="/brand/upfront-logo.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name} guides`} href={abs('/rss.xml')} />
 

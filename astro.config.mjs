@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 
 // Canonical origin. Every absolute URL, canonical tag, sitemap entry and
 // JSON-LD @id on the site derives from this one value.
-const SITE = process.env.PUBLIC_SITE_URL ?? 'https://xenapsis.com';
+const SITE = process.env.PUBLIC_SITE_URL ?? 'https://upfront.com';
 
 export default defineConfig({
   site: SITE,

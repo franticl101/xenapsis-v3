@@ -19,7 +19,7 @@ export function organization(): Json {
     url: abs('/'),
     description: SITE.description,
     foundingDate: SITE.founded,
-    logo: { '@type': 'ImageObject', url: abs('/brand/xenapsis-logo.svg'), width: 512, height: 512 },
+    logo: { '@type': 'ImageObject', url: abs('/brand/upfront-logo.svg'), width: 512, height: 512 },
     sameAs: [] as string[],
   };
 }

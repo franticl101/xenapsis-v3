@@ -14,6 +14,7 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import { join, relative, dirname, resolve, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
+import { attr, tags, metaContent, textOf, wordCount } from './lib/html.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const DIST = join(ROOT, 'dist');
@@ -46,27 +47,12 @@ async function walk(dir, predicate, found = []) {
   return found;
 }
 
-const attr = (tag, name) => tag.match(new RegExp(`${name}=["']([^"']*)["']`, 'i'))?.[1];
-const tags = (html, name) => html.match(new RegExp(`<${name}\\b[^>]*>`, 'gi')) ?? [];
-
-function metaContent(html, key, value) {
-  for (const tag of tags(html, 'meta')) {
-    if (attr(tag, key)?.toLowerCase() === value) return attr(tag, 'content');
-  }
-  return undefined;
-}
-
-/** Strip tags, scripts and styles to approximate indexable word count. */
-function wordCount(html) {
-  const body = html.slice(html.indexOf('<body'));
-  return body
-    .replace(/<(script|style)[\s\S]*?<\/\1>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&[a-z]+;/gi, ' ')
-    .split(/\s+/)
-    .filter(Boolean).length;
-}
-
+/**
+ * Read an attribute value, matching the closing quote to the opening one.
+ * A naive `[^"']*` stops at the first quote of either kind, so it truncates any
+ * value containing an apostrophe — which silently under-measures a perfectly
+ * good meta description.
+ */
 /** "/dist/tests/index.html" -> "/tests/" */
 function routeOf(file) {
   const rel = relative(DIST, file).replace(/\\/g, '/');
@@ -138,15 +124,14 @@ for (const file of htmlFiles) {
   else if (!hreflangs.some((t) => attr(t, 'hreflang') === 'x-default')) warn(page, 'no x-default hreflang');
 
   /* -- headings -- */
-  const h1s = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi) ?? [];
+  const h1s = textOf(html, 'h1');
   if (h1s.length === 0) fail(page, 'no <h1>');
   if (h1s.length > 1) fail(page, `${h1s.length} <h1> elements; expected exactly 1`);
-  const h1Text = h1s[0]?.replace(/<[^>]+>/g, '').trim();
-  if (h1Text && /try your traits|®|™/i.test(h1Text)) {
-    fail(page, `<h1> looks like a site tagline rather than a page heading: "${h1Text}"`);
+  if (h1s[0] && /try your traits|®|™/i.test(h1s[0])) {
+    fail(page, `<h1> looks like a site tagline rather than a page heading: "${h1s[0]}"`);
   }
-  for (const heading of html.match(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi) ?? []) {
-    const text = heading.replace(/<[^>]+>/g, '').trim().toLowerCase();
+  for (const heading of textOf(html, 'h2')) {
+    const text = heading.toLowerCase();
     if (['welcome', 'reset password', 'create account', 'log in', 'sign in'].includes(text)) {
       fail(page, `<h2> is interface chrome, not content: "${text}"`);
     }
@@ -238,11 +223,21 @@ try {
   fail('/robots.txt', 'missing');
 }
 
+/* -- the default origin is a placeholder until a real domain is confirmed -- */
+const PLACEHOLDER_ORIGIN = 'https://upfront.com';
+if ([...routes].length && [...seenTitles.values()].length) {
+  const sample = await readFile(join(DIST, 'index.html'), 'utf8');
+  const origin = sample.match(/<link rel="canonical" href="(https:\/\/[^/"]+)/)?.[1];
+  if (origin === PLACEHOLDER_ORIGIN) {
+    warn('(site)', `origin is still the placeholder ${PLACEHOLDER_ORIGIN} — set PUBLIC_SITE_URL before deploying, or every canonical, og:url and JSON-LD @id will point at a domain you may not own`);
+  }
+}
+
 /* -- the Open Graph image the meta tags promise must actually exist -- */
 try {
-  await stat(join(DIST, 'og', 'xenapsis-default.png'));
+  await stat(join(DIST, 'og', 'upfront-default.png'));
 } catch {
-  fail('/og/xenapsis-default.png', 'referenced by og:image but not present in the build');
+  fail('/og/upfront-default.png', 'referenced by og:image but not present in the build');
 }
 
 /* -- asset budgets -- */

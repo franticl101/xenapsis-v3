@@ -7,15 +7,15 @@
  * cannot reappear.
  */
 export const SITE = {
-  url: (import.meta.env.PUBLIC_SITE_URL ?? 'https://xenapsis.com').replace(/\/$/, ''),
-  name: 'Xenapsis',
-  legalName: 'Xenapsis',
+  url: (import.meta.env.PUBLIC_SITE_URL ?? 'https://upfront.com').replace(/\/$/, ''),
+  name: 'Upfront',
+  legalName: 'Upfront',
   tagline: 'Free personality tests. No email, no account, no paywall.',
   description:
     'Free personality and psychometric tests with instant percentage-strength results. No email address, no account, and no paywall — your results appear the moment you finish.',
   locale: 'en_US',
   lang: 'en',
-  twitter: '@xenapsis',
+  twitter: '@upfront',
   founded: '2026',
 } as const;
 

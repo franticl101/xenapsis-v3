@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Xenapsis logo">
-  <rect width="512" height="512" rx="128" fill="#3b4ee0"/>
-  <path d="M144 152 368 360M368 152 144 360" stroke="#fff" stroke-width="42" stroke-linecap="round"/>
-  <circle cx="256" cy="256" r="54" fill="#3b4ee0" stroke="#fff" stroke-width="35"/>
-</svg>

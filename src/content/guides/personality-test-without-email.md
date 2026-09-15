@@ -9,7 +9,7 @@ faqs:
   - question: "Why do personality tests ask for your email?"
     answer: "Because the result is the product being traded for your contact details. A completed test is a strong lead signal — you have just spent ten minutes demonstrating interest — so the address is worth more at that exact moment than at any other, which is why the gate appears after the questions rather than before."
   - question: "Is any personality test genuinely free with no signup?"
-    answer: "Yes. Xenapsis shows every result on screen with no email step, no account, and no paid tier. Scoring runs in your browser, so there is no server holding your answers."
+    answer: "Yes. Upfront shows every result on screen with no email step, no account, and no paid tier. Scoring runs in your browser, so there is no server holding your answers."
   - question: "Can a site identify me from my test answers alone?"
     answer: "Answers by themselves are not identifying, but they become so the moment they are attached to an email address or an account. A test that scores locally and never transmits answers avoids the question entirely."
 ---
@@ -49,9 +49,9 @@ A genuinely free test has no gate at any point in the sequence:
 
 That last point matters more than it sounds. If scoring happens locally, there is no database anywhere holding a record of how you answered questions about your own behaviour, because there was never anything to store.
 
-## How Xenapsis works
+## How Upfront works
 
-Every [Xenapsis test](/tests/) scores in your browser. Your answers are never transmitted, because there is no endpoint to transmit them to — the site is static files, and the scoring runs as a small script on the page you are already looking at.
+Every [test on Upfront](/tests/) scores in your browser. Your answers are never transmitted, because there is no endpoint to transmit them to — the site is static files, and the scoring runs as a small script on the page you are already looking at.
 
 There is no email field, no account, and no paid tier holding back a fuller version of your result. The [personality type test](/tests/personality-type/) shows all four dimensions with preference strengths, and the [career fit test](/tests/career-fit/) shows your full ranked interest profile.
 

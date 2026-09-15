@@ -9,7 +9,7 @@ const SECTIONS = [
     heading: 'Taking a test',
     faqs: [
       { question: 'Do I need to give an email address?', answer: 'No. There is no email field anywhere on this site. Your full result appears on screen the moment you answer the last question.' },
-      { question: 'Do I need an account?', answer: 'No. There is nothing to create and nothing to log into. Xenapsis is a static site with no user accounts at all.' },
+      { question: 'Do I need an account?', answer: 'No. There is nothing to create and nothing to log into. Upfront is a static site with no user accounts at all.' },
       { question: 'How long do the tests take?', answer: 'The personality type test is 48 questions and takes about nine minutes. The career fit test is 36 questions, and the risk tolerance and assertiveness tests are 24 questions each, at roughly five to seven minutes.' },
       { question: 'Can I pause and come back later?', answer: 'Answers are held in the page while you work, but they are not saved between visits — there is no account to store them against. Each test is short enough to finish in one sitting.' },
       { question: 'Is any part of the result held back for payment?', answer: 'No. There is no paid tier, no premium report, and no fuller version of your result. What you see is everything the test produces.' },
@@ -29,7 +29,7 @@ const SECTIONS = [
     faqs: [
       { question: 'Are these tests scientifically validated?', answer: 'They are not formally normed or peer-reviewed, and we do not claim they are. They are built using standard construction practice — balanced keying, adequate items per scale, continuous reporting — on published frameworks. For consequential decisions, use a properly normed instrument administered by a qualified practitioner.' },
       { question: 'Can I use a result for hiring?', answer: 'No. Type-based instruments do not reliably predict job performance, and the publisher of the MBTI instrument says the same about theirs. Structured interviews and work-sample tests are considerably better predictors.' },
-      { question: 'Is this the official MBTI test?', answer: 'No. The MBTI instrument is a commercial product of The Myers-Briggs Company, normally administered through a certified practitioner. Xenapsis is independent and unaffiliated, and builds on the same underlying Jungian dimensions.' },
+      { question: 'Is this the official MBTI test?', answer: 'No. The MBTI instrument is a commercial product of The Myers-Briggs Company, normally administered through a certified practitioner. Upfront is independent and unaffiliated, and builds on the same underlying Jungian dimensions.' },
     ],
   },
   {
@@ -45,8 +45,8 @@ const SECTIONS = [
 const allFaqs = SECTIONS.flatMap((section) => section.faqs);
 ---
 <BaseLayout
-  title="Xenapsis FAQ: Tests, Results and Privacy"
-  description="Answers about taking Xenapsis tests, reading your percentages, how accurate the results are, and what happens to your answers. No email or account needed."
+  title="Upfront FAQ: Tests, Results and Privacy"
+  description="Answers about taking Upfront's tests, reading your percentages, how accurate the results are, and what happens to your answers. No email or account needed."
   breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'FAQ', path: PATH }]}
   schema={[faqPage(allFaqs, PATH)]}
   layout="narrow"

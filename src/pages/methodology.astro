@@ -7,17 +7,17 @@ import { SITE_BUILD_DATE } from '../lib/dates';
 const PATH = '/methodology/';
 const totalItems = TESTS.reduce((n, t) => n + t.questions.length, 0);
 const faqs = [
-  { question: 'How are Xenapsis tests scored?', answer: 'Each item contributes a signed value from -2 to +2, multiplied by its keying direction. Those values are summed per scale and expressed as a position between the two poles, where 50% is an exact tie. Preference strength is the distance from that midpoint, doubled, so it runs from 0 to 100.' },
+  { question: 'How are Upfront\u2019s tests scored?', answer: 'Each item contributes a signed value from -2 to +2, multiplied by its keying direction. Those values are summed per scale and expressed as a position between the two poles, where 50% is an exact tie. Preference strength is the distance from that midpoint, doubled, so it runs from 0 to 100.' },
   { question: 'What is reverse keying and why does it matter?', answer: 'Half the items on every scale are worded so that agreeing moves the score in the opposite direction. Without this, a respondent who agrees with everything — a common and well-documented response style — would be pushed to an extreme that reflects their response habit rather than their personality.' },
   { question: 'Are these tests validated?', answer: 'They are not formally normed or peer-reviewed, and we do not claim otherwise. They are built on published frameworks using standard psychometric construction practice: balanced keying, adequate items per scale, and continuous rather than binary reporting. For decisions with real consequences, use a properly normed instrument administered by a qualified practitioner.' },
 ];
 ---
 <BaseLayout
-  title="How Xenapsis Builds and Scores Its Tests"
-  description="The item design, keying balance, and scoring maths behind every Xenapsis assessment — including what these tests are not validated to do."
+  title="How Upfront Builds and Scores Its Tests"
+  description="The item design, keying balance, and scoring maths behind every Upfront assessment — including what these tests are not validated to do."
   breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Methodology', path: PATH }]}
   schema={[
-    article({ headline: 'How Xenapsis builds and scores its tests', description: 'Item design, keying and scoring methodology.', path: PATH, published: SITE_BUILD_DATE, modified: SITE_BUILD_DATE, section: 'About' }),
+    article({ headline: 'How Upfront builds and scores its tests', description: 'Item design, keying and scoring methodology.', path: PATH, published: SITE_BUILD_DATE, modified: SITE_BUILD_DATE, section: 'About' }),
     faqPage(faqs, PATH),
   ]}
   layout="narrow"

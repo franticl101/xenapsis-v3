@@ -24,10 +24,9 @@ const card = `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="$
 
   <g transform="translate(88, 104)">
     <rect width="72" height="72" rx="18" fill="${BRAND}"/>
-    <path d="M20 21 52 51M52 21 20 51" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
-    <circle cx="36" cy="36" r="7.6" fill="${BRAND}" stroke="#fff" stroke-width="5"/>
+    <path d="M36 52V22M23.4 34.6 36 22l12.6 12.6" fill="none" stroke="#fff" stroke-width="6.3" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <text x="180" y="156" font-family="DejaVu Sans" font-size="44" font-weight="bold" fill="${INK}">Xenapsis</text>
+  <text x="180" y="156" font-family="DejaVu Sans" font-size="44" font-weight="bold" fill="${INK}">Upfront</text>
 
   <text x="88" y="300" font-family="DejaVu Sans" font-size="66" font-weight="bold" fill="${INK}">Free personality tests</text>
   <text x="88" y="382" font-family="DejaVu Sans" font-size="66" font-weight="bold" fill="${BRAND}">that just give you</text>
@@ -38,10 +37,10 @@ const card = `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="$
 
 await mkdir(OUT_DIR, { recursive: true });
 const png = await sharp(Buffer.from(card)).png({ compressionLevel: 9 }).toBuffer();
-await writeFile(new URL('xenapsis-default.png', `file://${OUT_DIR}`), png);
+await writeFile(new URL('upfront-default.png', `file://${OUT_DIR}`), png);
 
 const { width, height } = await sharp(png).metadata();
-console.log(`[og] xenapsis-default.png  ${width}x${height}  ${(png.length / 1024).toFixed(1)} KB`);
+console.log(`[og] upfront-default.png  ${width}x${height}  ${(png.length / 1024).toFixed(1)} KB`);
 if (width !== WIDTH || height !== HEIGHT) {
   console.error(`[og] dimensions do not match the meta tags (${WIDTH}x${HEIGHT})`);
   process.exit(1);

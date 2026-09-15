@@ -1,4 +1,4 @@
-# Xenapsis
+# Upfront
 
 Free personality and psychometric assessments. No email, no account, no paywall —
 every result renders on screen the moment the last question is answered, and
@@ -43,6 +43,7 @@ So each finding is encoded as a build-time invariant instead:
 | Two URLs serving near-identical content | Duplicate `<title>` or `<meta description>` across any two indexable pages fails the audit. Career pages carry a [separate content layer](src/data/careers.ts) so they cannot collapse into restated type profiles. |
 | Stale content, 8 months since last post | `dateModified` is emitted on every article, and guide frontmatter requires explicit `published`/`updated` dates. |
 | Core Web Vitals "not measured" | `npm run vitals` measures LCP, CLS, transfer and request count against budgets in CI. |
+| — | The audit's own HTML parsers are unit-tested, after a naive attribute regex was found truncating any meta description containing an apostrophe. An audit that reports confident failures about healthy pages is worse than no audit. |
 
 Run `npm run audit` against any build to see the current state.
 
@@ -69,10 +70,12 @@ src/
   content/guides/      Markdown guides, frontmatter validated by Zod
 scripts/
   seo-audit.mjs        Post-build site-wide audit (exits 1 on error)
+  lib/html.mjs         HTML readers used by the audit — unit-tested separately
   generate-og.mjs      Renders the Open Graph image from brand tokens
   measure-vitals.mjs   Core Web Vitals against budgets
 tests/
-  scoring.test.ts      13 unit tests
+  scoring.test.ts      13 unit tests for the scoring maths
+  html.test.ts         10 unit tests for the audit's own parsers
   e2e/assessment.mjs   7 browser checks against the built output
 ```
 
@@ -135,13 +138,18 @@ Choices behind those numbers:
 
 ## Configuration
 
-The production origin comes from `PUBLIC_SITE_URL`, defaulting to
-`https://xenapsis.com`. Set it once and canonicals, `og:url`, JSON-LD `@id`s,
-the sitemap and `robots.txt` all follow:
+The production origin comes from `PUBLIC_SITE_URL`. Set it once and canonicals,
+`og:url`, JSON-LD `@id`s, the sitemap and `robots.txt` all follow:
 
 ```bash
-PUBLIC_SITE_URL=https://staging.example.com npm run build
+PUBLIC_SITE_URL=https://takeupfront.com npm run build
 ```
+
+**The default, `https://upfront.com`, is a placeholder and almost certainly not
+yours.** The audit emits a warning for as long as a build still carries it,
+because an unset origin would otherwise bake a domain you may not own into every
+canonical tag on the site. The warning clears as soon as `PUBLIC_SITE_URL` is
+set. Confirm the domain and trademark position before launch.
 
 ## Content notes
 
