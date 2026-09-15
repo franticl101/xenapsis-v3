@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TestRunner from '../../components/TestRunner.astro';
+import Icon from '../../components/Icon.astro';
+import { TESTS, type Assessment } from '../../data/tests';
+import { quiz, faqPage } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return TESTS.map((test) => ({ params: { slug: test.slug }, props: { test } }));
+}
+
+const { test } = Astro.props as { test: Assessment };
+
+const schema = [
+  quiz({
+    name: test.name,
+    description: test.metaDescription,
+    path: test.path,
+    questionCount: test.questions.length,
+    minutes: test.minutes,
+    about: test.about,
+  }),
+  faqPage(test.faqs, test.path),
+];
+---
+<BaseLayout
+  title={test.title}
+  description={test.metaDescription}
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Tests', path: '/tests/' }, { name: test.name, path: test.path }]}
+  schema={schema}
+>
+  <section class="hero wrap">
+    <p class="eyebrow">Free · No email · No account</p>
+    <h1>{test.h1}</h1>
+    <p class="lede">{test.lede}</p>
+    <ul class="trust-row">
+      <li><Icon name="chart" /> {test.questions.length} questions</li>
+      <li><Icon name="clock" /> about {test.minutes} minutes</li>
+      <li><Icon name="lock" /> scored in your browser</li>
+    </ul>
+  </section>
+
+  <div class="wrap prose">
+    {test.intro.map((paragraph) => <p>{paragraph}</p>)}
+
+    <h2>What this test measures</h2>
+    <div class="table-scroll">
+      <table>
+        <caption>The {test.scales.length} scales in the {test.name.toLowerCase()}</caption>
+        <thead>
+          <tr><th scope="col">Scale</th><th scope="col">What it covers</th></tr>
+        </thead>
+        <tbody>
+          {test.scales.map((scale) => (
+            <tr>
+              <th scope="row">{test.resultMode === 'type' ? `${scale.poleA} / ${scale.poleB}` : scale.poleB}</th>
+              <td>{scale.question}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <TestRunner test={test} />
+
+    <h2 id="faq">Questions about this test</h2>
+    {test.faqs.map((faq) => (
+      <details>
+        <summary>{faq.question}</summary>
+        <p>{faq.answer}</p>
+      </details>
+    ))}
+
+    <div class="callout">
+      <p>
+        <strong>What this is not.</strong> Xenapsis assessments are educational instruments for
+        self-reflection. They are not clinical, diagnostic, or selection tools, and they should
+        not be used to make hiring decisions. We go into why in
+        <a href="/guides/are-personality-tests-accurate/">our guide on what these tests can actually tell you</a>.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

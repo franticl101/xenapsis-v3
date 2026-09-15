@@ -6,14 +6,20 @@
   "description": "Xenapsis - free, no-signup personality and psychometric assessments.",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/seo-audit.mjs",
+    "build": "node scripts/generate-og.mjs && astro build && node scripts/seo-audit.mjs",
     "preview": "astro preview",
     "audit": "node scripts/seo-audit.mjs",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "verify": "npm run test && npm run build && npm run test:e2e",
+    "test:e2e": "node tests/e2e/assessment.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
     "astro": "^7.3.2"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
   }
 }

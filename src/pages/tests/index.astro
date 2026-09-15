@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { TESTS } from '../../data/tests';
+import { itemList } from '../../lib/schema';
+
+const PATH = '/tests/';
+const totalQuestions = TESTS.reduce((n, t) => n + t.questions.length, 0);
+---
+<BaseLayout
+  title="All Free Personality & Career Tests"
+  description={`Four free assessments — personality type, career fit, risk tolerance and assertiveness. ${totalQuestions} questions in total, instant results, no email or account.`}
+  breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'Tests', path: PATH }]}
+  schema={[itemList('Free assessments', TESTS.map((t) => ({ name: t.name, path: t.path })))]}
+>
+  <section class="hero wrap">
+    <p class="eyebrow">{TESTS.length} assessments · {totalQuestions} questions · all free</p>
+    <h1>Every Xenapsis test, free and unlocked</h1>
+    <p class="lede">
+      No test here has a paid tier, a premium report, or a sign-up wall. You answer the
+      questions, you get the whole result. Pick the one that matches what you actually
+      want to know.
+    </p>
+  </section>
+
+  <section class="section wrap">
+    <div class="grid grid-2">
+      {TESTS.map((test) => (
+        <article class="card">
+          <h2 style="font-size:1.25rem;margin-top:0">
+            <a href={test.path}>{test.name}</a>
+          </h2>
+          <p>{test.cardBlurb}</p>
+          <p class="meta">
+            <span><Icon name="chart" size={14} /> {test.questions.length} questions</span>
+            <span><Icon name="clock" size={14} /> about {test.minutes} minutes</span>
+            <span><Icon name="lock" size={14} /> no email</span>
+          </p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section tint">
+    <div class="wrap prose">
+      <h2>Which test should you take?</h2>
+      <p>
+        If you are trying to understand <strong>how you think and make decisions</strong>, start
+        with the <a href="/tests/personality-type/">personality type test</a>. It is the longest
+        of the four and the one everything else on this site connects back to.
+      </p>
+      <p>
+        If you are actually asking <strong>what job would suit me</strong>, the
+        <a href="/tests/career-fit/">career fit test</a> is the better instrument. Vocational
+        interest predicts job satisfaction and how long people stay considerably better than
+        personality type does, which is why professional careers advisers use it.
+      </p>
+      <p>
+        The <a href="/tests/risk-tolerance/">risk tolerance test</a> and
+        <a href="/tests/assertiveness/">assertiveness test</a> are narrower and faster. Both
+        report several sub-scores rather than one number, because both are areas where people
+        are typically strong in one context and weak in another.
+      </p>
+
+      <h2>What every test here has in common</h2>
+      <ul>
+        <li><strong>No email gate.</strong> Results render on screen when you finish the last question.</li>
+        <li><strong>No account.</strong> There is nothing to create and nothing to log into.</li>
+        <li><strong>Scored locally.</strong> Your answers stay in your browser; they are never uploaded.</li>
+        <li><strong>Balanced items.</strong> Every scale has equal numbers of forward- and reverse-worded questions, so agreeing with everything returns a neutral score rather than a flattering extreme.</li>
+        <li><strong>Percentages, not just labels.</strong> You see how strong each result is, including when it is effectively a coin toss.</li>
+      </ul>
+      <p>
+        More on the last two points in <a href="/methodology/">how we build and score these tests</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

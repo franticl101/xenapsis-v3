@@ -1,0 +1,328 @@
+---
+import { LIKERT, type Assessment } from '../data/tests';
+import { TYPES } from '../data/types';
+
+interface Props { test: Assessment; }
+const { test } = Astro.props as Props;
+
+/**
+ * Runtime config is emitted as a JSON island rather than inlined into the
+ * script. The behaviour bundle is therefore byte-identical across all four
+ * test pages, so a visitor who takes a second test reuses the cached script.
+ */
+const config = {
+  mode: test.resultMode,
+  items: test.questions.map((q) => ({ s: q.scale, k: q.keyed })),
+  scales: test.scales.map((s) => ({
+    id: s.id, a: s.poleA, b: s.poleB, q: s.question,
+    ad: s.poleADescription, bd: s.poleBDescription,
+  })),
+  types: test.resultMode === 'type'
+    ? Object.fromEntries(TYPES.map((t) => [t.code, { n: t.nickname, s: t.summary }]))
+    : undefined,
+};
+
+/** Escaping `<` prevents a `</script>` sequence in data from closing the tag. */
+const configJson = JSON.stringify(config).replace(/</g, '\\u003c');
+const total = test.questions.length;
+---
+
+<section class="runner" aria-labelledby="runner-heading">
+  <h2 id="runner-heading">The questions</h2>
+  <p class="runner-intro">
+    Answer honestly about how you actually behave, not how you would like to.
+    There are {total} statements and no time limit.
+  </p>
+
+  <noscript>
+    <div class="callout warn">
+      <p>
+        <strong>Scoring needs JavaScript.</strong> Every question is listed below so you
+        can read them, but the browser calculates your result locally — there is no server
+        to send your answers to. Enable JavaScript to take the test.
+      </p>
+    </div>
+  </noscript>
+
+  <div class="progress-bar" data-progress hidden>
+    <div class="progress-track">
+      <div class="progress-fill" data-progress-fill style="width:0%"></div>
+    </div>
+    <p class="progress-label" data-progress-label aria-live="polite">0 of {total} answered</p>
+  </div>
+
+  <form data-test-form novalidate>
+    <ol class="q-list">
+      {test.questions.map((question, index) => (
+        <li>
+          <fieldset class="q">
+            <legend>
+              <span class="q-num" aria-hidden="true">{index + 1}</span>
+              {question.text}
+            </legend>
+            <div class="scale-row">
+              <span class="scale-end">Disagree</span>
+              <div class="opts">
+                {LIKERT.map((option, value) => (
+                  <input
+                    type="radio"
+                    class={`dot dot-${value}`}
+                    name={`q${index}`}
+                    id={`q${index}-${value}`}
+                    value={value}
+                    aria-label={option.label}
+                  />
+                ))}
+              </div>
+              <span class="scale-end">Agree</span>
+            </div>
+          </fieldset>
+        </li>
+      ))}
+    </ol>
+
+    <div class="runner-actions">
+      <button type="submit" class="btn btn-primary" data-submit disabled>
+        Answer all {total} to see your result
+      </button>
+      <p class="runner-note">Nothing is sent anywhere. Scoring happens in this browser.</p>
+    </div>
+  </form>
+
+  <div data-results hidden tabindex="-1"></div>
+
+  <script type="application/json" data-test-config set:html={configJson} />
+</section>
+
+<script>
+  import { scoreAll, typeCode, strengthLabel, rankByStrength, isComplete } from '../lib/scoring';
+
+  interface ScaleConfig { id: string; a: string; b: string; q: string; ad: string; bd: string; }
+  interface TestConfig {
+    mode: 'type' | 'profile';
+    items: { s: string; k: 1 | -1 }[];
+    scales: ScaleConfig[];
+    types?: Record<string, { n: string; s: string }>;
+  }
+
+  const root = document.querySelector<HTMLElement>('.runner');
+  const configEl = root?.querySelector<HTMLScriptElement>('[data-test-config]');
+  const form = root?.querySelector<HTMLFormElement>('[data-test-form]');
+  const submit = root?.querySelector<HTMLButtonElement>('[data-submit]');
+  const progress = root?.querySelector<HTMLElement>('[data-progress]');
+  const fill = root?.querySelector<HTMLElement>('[data-progress-fill]');
+  const label = root?.querySelector<HTMLElement>('[data-progress-label]');
+  const output = root?.querySelector<HTMLElement>('[data-results]');
+
+  if (root && configEl && form && submit && progress && fill && label && output) {
+    const config: TestConfig = JSON.parse(configEl.textContent ?? '{}');
+    const items = config.items.map((i) => ({ scale: i.s, keyed: i.k }));
+    const total = items.length;
+
+    /** The only mutable state. Index-aligned with `items`. */
+    const responses: (number | null)[] = new Array(total).fill(null);
+
+    progress.hidden = false;
+
+    const answeredCount = () => responses.reduce<number>((n, r) => (r === null ? n : n + 1), 0);
+
+    /** Targeted updates only — two text/style writes, never a re-render. */
+    function refreshProgress(): void {
+      const done = answeredCount();
+      const pct = Math.round((done / total) * 100);
+      fill!.style.width = `${pct}%`;
+      label!.textContent = `${done} of ${total} answered`;
+      const complete = isComplete(responses, total);
+      submit!.disabled = !complete;
+      submit!.textContent = complete ? 'See my result' : `Answer all ${total} to see your result`;
+    }
+
+    /** One delegated listener for all questions, rather than one per input. */
+    form.addEventListener('change', (event) => {
+      const input = event.target as HTMLInputElement;
+      if (input?.type !== 'radio') return;
+      const index = Number(input.name.slice(1));
+      if (!Number.isInteger(index) || index < 0 || index >= total) return;
+      responses[index] = Number(input.value);
+      refreshProgress();
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!isComplete(responses, total)) {
+        firstUnanswered()?.scrollIntoView({ block: 'center' });
+        return;
+      }
+      render();
+    });
+
+    function firstUnanswered(): HTMLElement | null {
+      const index = responses.findIndex((r) => r === null);
+      return index === -1 ? null : form!.querySelector<HTMLElement>(`#q${index}-0`)?.closest('.q') ?? null;
+    }
+
+    function bar(percent: number, leftLabel: string, rightLabel: string): string {
+      const left = Math.round(percent);
+      return `
+        <div class="bar" role="img" aria-label="${leftLabel} ${left} per cent, ${rightLabel} ${100 - left} per cent">
+          <div class="bar-fill" style="width:${left}%"></div>
+        </div>`;
+    }
+
+    function renderType(): string {
+      const results = scoreAll(config.scales.map((s) => s.id), items, responses);
+      const poles = Object.fromEntries(config.scales.map((s) => [s.id, { poleA: s.a, poleB: s.b }]));
+      const code = typeCode(results, poles);
+      const profile = config.types?.[code];
+
+      const rows = results.map((result, i) => {
+        const scale = config.scales[i];
+        const side = result.side === 'B' ? scale.b : scale.a;
+        const description = result.side === 'B' ? scale.bd : scale.ad;
+        return `
+          <div class="result-row">
+            <p class="result-row-head">
+              <strong>${side} — ${Math.round(result.strength)}%</strong>
+              <span>${scale.q}</span>
+            </p>
+            ${bar(result.side === 'B' ? result.percentB : 100 - result.percentB, side, result.side === 'B' ? scale.a : scale.b)}
+            <p class="result-row-note">${description} That is ${strengthLabel(result.strength)}.</p>
+          </div>`;
+      }).join('');
+
+      return `
+        <h2 tabindex="-1">Your result: <span class="type-code">${code}</span></h2>
+        ${profile ? `<p class="result-lede"><strong>${profile.n}.</strong> ${profile.s}</p>` : ''}
+        <div class="btn-row">
+          <a class="btn btn-primary" href="/types/${code.toLowerCase()}/">Read the full ${code} profile</a>
+          <a class="btn btn-ghost" href="/careers/${code.toLowerCase()}/">Careers for ${code}</a>
+        </div>
+        <h3>How strong each preference is</h3>
+        <p>The percentage is how far you leaned from an exact tie, not how much of the trait you have.</p>
+        ${rows}`;
+    }
+
+    function renderProfile(): string {
+      const results = rankByStrength(scoreAll(config.scales.map((s) => s.id), items, responses));
+      const byId = new Map(config.scales.map((s) => [s.id, s]));
+
+      const rows = results.map((result, rank) => {
+        const scale = byId.get(result.id)!;
+        const high = result.percentB >= 50;
+        return `
+          <div class="result-row">
+            <p class="result-row-head">
+              <strong>${rank + 1}. ${scale.b} — ${Math.round(result.percentB)}%</strong>
+              <span>${scale.q}</span>
+            </p>
+            ${bar(result.percentB, scale.b, scale.a)}
+            <p class="result-row-note">${high ? scale.bd : scale.ad}</p>
+          </div>`;
+      }).join('');
+
+      const top = byId.get(results[0].id)!;
+      return `
+        <h2 tabindex="-1">Your result: ${top.b} leads your profile</h2>
+        <p class="result-lede">Your scales, ranked. The gaps between them matter more than any single figure.</p>
+        ${rows}`;
+    }
+
+    function render(): void {
+      output!.innerHTML = `
+        <div class="results-card">
+          ${config.mode === 'type' ? renderType() : renderProfile()}
+          <p class="result-footnote">
+            This result is a snapshot of how you answered today, not a fixed label.
+            Read <a href="/guides/are-personality-tests-accurate/">what these results can and cannot tell you</a>.
+          </p>
+          <button type="button" class="btn btn-ghost" data-restart>Take it again</button>
+        </div>`;
+      output!.hidden = false;
+      form!.hidden = true;
+      progress!.hidden = true;
+      output!.querySelector<HTMLElement>('h2')?.focus();
+      output!.scrollIntoView({ block: 'start', behavior: 'smooth' });
+
+      output!.querySelector('[data-restart]')?.addEventListener('click', () => {
+        responses.fill(null);
+        form!.reset();
+        form!.hidden = false;
+        progress!.hidden = false;
+        output!.hidden = true;
+        output!.innerHTML = '';
+        refreshProgress();
+        root!.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      });
+    }
+
+    refreshProgress();
+  }
+</script>
+
+<style>
+  .runner { margin-top: 3rem; }
+  .runner-intro { color: var(--ink-soft); max-width: 40rem; }
+
+  .progress-bar {
+    position: sticky; top: 3.4rem; z-index: 10; padding: .7rem 0 .6rem;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--line);
+  }
+  .progress-track { height: 6px; background: var(--bg-sink); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--brand); border-radius: 999px; transition: width .2s ease; }
+  .progress-label { margin: .45rem 0 0; font-size: .82rem; color: var(--ink-faint); }
+
+  .q-list { list-style: none; margin: 1.5rem 0 0; padding: 0; counter-reset: q; }
+  .q-list > li { margin-bottom: .9rem; }
+
+  .q { border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem 1.35rem; margin: 0; background: var(--bg); }
+  .q legend { font-weight: 600; padding: 0 .2rem; display: flex; gap: .6rem; align-items: baseline; line-height: 1.45; }
+  .q-num { font-size: .78rem; font-weight: 700; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+
+  .scale-row { display: flex; align-items: center; gap: .75rem; margin-top: 1rem; }
+  .scale-end { font-size: .78rem; color: var(--ink-faint); flex: none; }
+  .opts { display: flex; align-items: center; justify-content: center; gap: clamp(.4rem, 2vw, 1rem); flex: 1; }
+
+  /* The radio *is* the control: appearance:none styles the input directly, so
+     there is no hidden input to fall out of sync with a proxy label, and the
+     scale row is one DOM node per option instead of three. Native radio-group
+     keyboard behaviour (arrow keys, roving tabindex) is preserved for free. */
+  .dot {
+    appearance: none; -webkit-appearance: none; margin: 0; flex: none;
+    border-radius: 50%; cursor: pointer; background: transparent;
+    border: 2px solid var(--line);
+    transition: background-color .12s ease, border-color .12s ease, transform .12s ease;
+  }
+  .dot-0, .dot-4 { width: 2.6rem; height: 2.6rem; }
+  .dot-1, .dot-3 { width: 2.1rem; height: 2.1rem; }
+  .dot-2 { width: 1.7rem; height: 1.7rem; }
+  .dot-0, .dot-1 { border-color: color-mix(in srgb, var(--warn) 55%, var(--line)); }
+  .dot-3, .dot-4 { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+  .dot:hover { transform: scale(1.08); }
+
+  .dot:checked { border-width: 3px; }
+  .dot-0:checked, .dot-1:checked { background: var(--warn); border-color: var(--warn); }
+  .dot-2:checked { background: var(--ink-faint); border-color: var(--ink-faint); }
+  .dot-3:checked, .dot-4:checked { background: var(--accent); border-color: var(--accent); }
+  .dot:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
+
+  .runner-actions { margin-top: 2rem; text-align: center; }
+  .runner-note { font-size: .85rem; color: var(--ink-faint); margin: .7rem 0 0; }
+
+  .results-card { border: 1px solid var(--line); border-radius: var(--radius-lg); padding: clamp(1.25rem, 4vw, 2.25rem); background: var(--bg-soft); margin-top: 2rem; }
+  .results-card h2 { margin-top: 0; }
+  .results-card h2:focus { outline: none; }
+  .result-lede { font-size: 1.1rem; color: var(--ink-soft); }
+  .result-row { margin-bottom: 1.6rem; }
+  .result-row-head { display: flex; flex-wrap: wrap; gap: .3rem .7rem; align-items: baseline; margin: 0 0 .45rem; }
+  .result-row-head span { font-size: .88rem; color: var(--ink-faint); }
+  .result-row-note { font-size: .93rem; color: var(--ink-soft); margin: .45rem 0 0; }
+  .bar { height: 12px; background: var(--bg-sink); border-radius: 999px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--brand); border-radius: 999px; }
+  .result-footnote { font-size: .88rem; color: var(--ink-faint); border-top: 1px solid var(--line); padding-top: 1rem; margin-top: 1.5rem; }
+
+  @media (max-width: 30rem) {
+    .scale-end { display: none; }
+    .q { padding: 1rem; }
+  }
+</style>
